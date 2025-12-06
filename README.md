@@ -4,12 +4,17 @@ A beautiful, mobile-optimized randomizer for Catan 5-6 player expansion boards.
 
 ## Features
 
-- **Random Board Generation**: Generate balanced, randomized Catan boards with a single tap
-- **Seeded Generation**: Use custom seeds to create reproducible board layouts
-- **Smart Placement**: Automatically prevents adjacent red number tiles (6 and 8) for better game balance
-- **Mobile-First Design**: Optimized touch interface with smooth animations
-- **Beautiful UI**: Elegant gradient design with proper resource colors and typography
-- **No Build Required**: Pure HTML/CSS/JavaScript - works anywhere
+- **🎲 Advanced Board Generation**: Generate balanced, randomized Catan boards using algorithms based on competitive play research
+- **🔢 Seeded Generation**: Use custom seeds to create reproducible board layouts - share seeds with friends to play the same setup
+- **⚖️ Smart Balance Algorithm**:
+  - Prevents adjacent red number tiles (6 and 8)
+  - Prevents clustering of high-probability numbers (5, 6, 8, 9)
+  - Uses pip values to ensure fair resource distribution
+  - Based on CIBI (Catan Island Balance Index) principles
+- **⚓ Randomized Harbors**: All 8 harbors (3x generic 3:1 and 5x specialty 2:1) are randomly placed each shuffle
+- **📱 Mobile-First Design**: Optimized touch interface with smooth animations
+- **🎨 Beautiful UI**: Elegant gradient design with proper resource colors and typography
+- **⚡ No Build Required**: Pure HTML/CSS/JavaScript - works anywhere
 
 ## Live Demo
 
@@ -46,13 +51,41 @@ A beautiful, mobile-optimized randomizer for Catan 5-6 player expansion boards.
   - Ore (⛰️)
   - Sheep (🐑)
 
+## Balance Algorithm
+
+This generator uses research-based algorithms to create fair, competitive boards:
+
+### Number Placement
+- **Pip Value Analysis**: Each number has a pip value (1-5) representing probability
+  - 6 & 8 = 5 pips (14% chance each)
+  - 5 & 9 = 4 pips (11% chance each)
+  - 4 & 10 = 3 pips (8% chance each)
+  - 3 & 11 = 2 pips (6% chance each)
+  - 2 & 12 = 1 pip (3% chance each)
+
+### Balance Checks
+1. **Red Number Rule**: No two red numbers (6, 8) can be adjacent
+2. **High-Pip Clustering Prevention**: Prevents 3+ adjacent high-value tiles
+3. **Iterative Optimization**: Tries up to 200 layouts to find balanced placement
+
+### Harbor Randomization
+- All 8 harbor positions are randomized each shuffle
+- Prevents memorization of optimal starting positions
+- Creates unique strategic opportunities every game
+
 ## Technical Details
 
 - Pure vanilla JavaScript - no dependencies
 - Seeded random number generator for reproducible layouts
-- Automatic validation to prevent adjacent red numbers
+- Advanced balance validation using pip values and adjacency checks
 - Responsive design with touch optimization
 - Progressive enhancement for mobile web apps
+
+### Algorithm Research
+Based on principles from:
+- CIBI (Catan Island Balance Index)
+- Competitive Catan community best practices
+- Fairness measures for starting position equity
 
 ## Deployment
 
