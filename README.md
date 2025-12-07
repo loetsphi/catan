@@ -1,13 +1,14 @@
 # Catan Board Generator
 
-A beautiful, mobile-optimized randomizer for Catan 5-6 player expansion boards.
+A beautiful, mobile-optimized randomizer for Catan 5-6 player expansion boards with TypeScript type safety.
 
 ## Features
 
 - **🎲 Advanced Board Generation**: Generate balanced, randomized Catan boards using algorithms based on competitive play research
-- **🔢 Seeded Generation**: Use custom seeds to create reproducible board layouts - share seeds with friends to play the same setup
+- **🔢 Reproducible Seeds**: Use friendly seed names like "BraveWheat042" - paste the same seed to get the exact same board
 - **📊 CIBI Score Display**: Real-time Catan Island Balance Index score (0-100) showing board balance quality
-- **🏷️ Human-Friendly Seeds**: Auto-generated memorable seed names like "BraveWheat042" for easy sharing
+- **📈 Resource Distribution Stats**: See pip value totals for each resource (Wood, Wheat, Sheep, Ore, Brick)
+- **🏷️ Human-Friendly Seeds**: Auto-generated memorable seed names using string hashing for reproducibility
 - **⚖️ Smart Balance Algorithm**:
   - Prevents adjacent red number tiles (6 and 8)
   - Prevents clustering of high-probability numbers (5, 6, 8, 9)
@@ -15,7 +16,7 @@ A beautiful, mobile-optimized randomizer for Catan 5-6 player expansion boards.
   - Calculates CIBI to measure overall board balance
 - **📱 Mobile-First Design**: Optimized touch interface with smooth animations
 - **🎨 Beautiful UI**: Elegant gradient design with proper resource colors and typography
-- **⚡ No Build Required**: Pure HTML/CSS/JavaScript - works anywhere
+- **💎 TypeScript**: Fully typed codebase with strict type checking
 
 ## Live Demo
 
@@ -24,25 +25,35 @@ A beautiful, mobile-optimized randomizer for Catan 5-6 player expansion boards.
 ## How to Use
 
 1. Open the generator in your browser
-2. (Optional) Enter a custom seed for reproducible layouts
+2. (Optional) Enter a custom seed name (or paste a previous seed to reproduce a board)
 3. Tap **Shuffle** to generate a new board
 4. Check the **CIBI Score** to see how balanced your board is (higher is better)
-5. Share the **Seed** with friends to play the same layout
+5. View **Resource Distribution** to see pip values per resource
+6. Copy the **Seed** name and share with friends to play the same layout
+
+### Seed Reproducibility
+
+The generator creates friendly seed names like "BraveWheat042". These names are hashed to create consistent numeric seeds:
+- Generate a board → Get "BraveWheat042"
+- Copy and paste "BraveWheat042" → Get the exact same board
+- Works with any text input for custom seeds
 
 ## Board Details
 
 ### Resources
-- 6x Wood (Forest)
-- 6x Wheat (Fields)
-- 6x Sheep (Pasture)
-- 5x Ore (Mountains)
-- 5x Brick (Hills)
-- 2x Desert
+- 6x Wood (Forest) 🌲
+- 6x Wheat (Fields) 🌾
+- 6x Sheep (Pasture) 🐑
+- 5x Ore (Mountains) ⛰️
+- 5x Brick (Hills) 🧱
+- 2x Desert 🏜️
 
 ### Number Tokens
-- Red numbers (6, 8): Most common rolls
-- Black numbers (5, 9): Very common
-- Other numbers (2-4, 10-12): Less frequent
+- Red numbers (6, 8): Most common rolls - 5 pips each
+- High numbers (5, 9): Very common - 4 pips each
+- Medium numbers (4, 10): Common - 3 pips each
+- Low numbers (3, 11): Uncommon - 2 pips each
+- Rare numbers (2, 12): Very rare - 1 pip each
 
 ## Balance Algorithm
 
@@ -64,18 +75,34 @@ This generator uses research-based algorithms to create fair, competitive boards
 ### CIBI (Catan Island Balance Index)
 - Calculates resource distribution balance (0-100 scale)
 - Measures pip value variance across all five resources
-- Higher scores indicate more balanced boards
+- Lower variance = higher score = better balance
 - Score of 90+ = Excellent balance
 - Score of 70-89 = Good balance
 - Score below 70 = Consider reshuffling
 
+### Resource Distribution Statistics
+- Displays total pip values for each resource
+- Helps evaluate if resources are balanced
+- Higher pip total = more production probability for that resource
+- Ideal boards have similar pip totals across all resources
+
 ## Technical Details
 
-- Pure vanilla JavaScript - no dependencies
+### Architecture
+- **TypeScript**: Fully typed codebase with strict mode enabled
+- **Type Definitions**:
+  - `Resource`: Wood, wheat, sheep, ore, brick, desert
+  - `Tile`: Combines resource, number token, position, and edge status
+  - `NumberToken`: Value, letter, pips, color, pip value
+  - `Position`: Board coordinates with edge detection
+  - `CIBIResult`: Balance score and resource pip totals
+
+### Key Components
 - Seeded random number generator for reproducible layouts
+- String hashing function for friendly seed name conversion
 - Advanced balance validation using pip values and adjacency checks
 - Responsive design with touch optimization
-- Progressive enhancement for mobile web apps
+- ES2020 TypeScript compiled to clean JavaScript
 
 ### Algorithm Research
 Based on principles from:
@@ -83,25 +110,70 @@ Based on principles from:
 - Competitive Catan community best practices
 - Fairness measures for starting position equity
 
+## Development
+
+### Prerequisites
+- Node.js 18+
+- npm
+
+### Setup
+```bash
+# Install dependencies
+npm install
+
+# Build TypeScript
+npm run build
+
+# Watch for changes
+npm run watch
+
+# Clean build artifacts
+npm run clean
+```
+
+### Project Structure
+```
+catan/
+├── src/
+│   └── board-generator.ts   # TypeScript source with types
+├── dist/                     # Build output (generated)
+│   ├── board-generator.js
+│   ├── board-generator.d.ts
+│   └── index.html
+├── index.html               # Main HTML file
+├── tsconfig.json            # TypeScript configuration
+├── package.json             # Dependencies and scripts
+└── .github/workflows/       # Azure deployment
+```
+
+### Type System
+The codebase uses strict TypeScript types for safety:
+- `Resource` type for resource names
+- `Tile` interface for board tiles
+- `NumberToken` interface for number tokens
+- `Position` interface for board positions
+- `CIBIResult` interface for balance calculations
+
 ## Deployment
 
 This project is automatically deployed to Azure Static Web Apps via GitHub Actions.
+
+### Build Process
+1. Install Node.js dependencies
+2. Compile TypeScript to JavaScript
+3. Copy HTML to dist folder
+4. Deploy dist folder to Azure
 
 ### Manual Deployment
 
 To deploy elsewhere:
 
-1. Clone this repository
-2. Upload `index.html` to any static hosting service
-3. No build step required!
+```bash
+# Build the project
+npm run build
 
-## Development
-
-This is a single-file application. To modify:
-
-1. Edit `index.html`
-2. Test in a browser
-3. Deploy
+# Upload dist/ folder to any static hosting service
+```
 
 ## License
 
