@@ -239,16 +239,17 @@ function isBalancedPlacement(
 function shuffleBoard(): void {
     const seedInput = (document.getElementById('seedInput') as HTMLInputElement).value;
     let seed: number;
-    let friendlySeedName: string;
 
     if (seedInput) {
-        // User provided a seed
-        seed = parseInt(seedInput) || seedInput.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-        friendlySeedName = seedInput;
+        // User provided a seed - parse as integer
+        seed = parseInt(seedInput);
+        if (isNaN(seed)) {
+            // Fallback for non-numeric input: convert string to numeric hash
+            seed = seedInput.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+        }
     } else {
         // Generate random seed
         seed = Math.floor(Date.now() + Math.random() * 1000000);
-        friendlySeedName = generateFriendlySeed(seed);
     }
 
     // Shuffle resources
@@ -291,7 +292,7 @@ function shuffleBoard(): void {
     // Update displays
     const seedDisplay = document.getElementById('seedDisplay');
     const cibiDisplay = document.getElementById('cibiDisplay');
-    if (seedDisplay) seedDisplay.textContent = friendlySeedName;
+    if (seedDisplay) seedDisplay.textContent = seed.toString();
     if (cibiDisplay) cibiDisplay.textContent = cibiResult.score.toString();
 
     // Update resource distribution displays
