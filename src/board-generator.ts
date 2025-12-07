@@ -1,4 +1,7 @@
-// Type definitions
+// ============================================================================
+// Type Definitions
+// ============================================================================
+
 type Resource = 'wood' | 'wheat' | 'sheep' | 'ore' | 'brick' | 'desert';
 
 interface NumberToken {
@@ -7,13 +10,6 @@ interface NumberToken {
     pips: string;
     red: boolean;
     pipValue: number;
-}
-
-interface Tile {
-    resource: Resource;
-    number?: NumberToken;
-    position: [number, number];
-    isEdge: boolean;
 }
 
 interface Position {
@@ -34,13 +30,38 @@ interface CIBIResult {
     pipTotals: ResourcePipTotals;
 }
 
-// Seeded random number generator
+// ============================================================================
+// Constants
+// ============================================================================
+
+const BALANCE_ATTEMPTS = 200;
+const HIGH_PIP_THRESHOLD = 4;
+const MAX_ADJACENT_HIGH_PIPS = 2;
+const CIBI_VARIANCE_MULTIPLIER = 2;
+
+const ADJECTIVES = ['Swift', 'Noble', 'Brave', 'Bright', 'Lucky', 'Grand', 'Wise', 'Bold', 'Epic', 'Pure'];
+const NOUNS = ['Sheep', 'Wheat', 'Wood', 'Brick', 'Stone', 'Harbor', 'Island', 'Coast', 'Trade', 'Road'];
+
+// ============================================================================
+// Random & Hashing Functions
+// ============================================================================
+
+/**
+ * Seeded random number generator using sine function
+ * @param seed - Numeric seed for reproducibility
+ * @returns Random number between 0 and 1
+ */
 function seededRandom(seed: number): number {
     const x = Math.sin(seed) * 10000;
     return x - Math.floor(x);
 }
 
-// Shuffle array with seed
+/**
+ * Shuffle array using Fisher-Yates algorithm with seeded randomness
+ * @param array - Array to shuffle
+ * @param seed - Numeric seed for reproducibility
+ * @returns New shuffled array
+ */
 function shuffleArray<T>(array: T[], seed: number): T[] {
     const arr = [...array];
     for (let i = arr.length - 1; i > 0; i--) {
@@ -50,7 +71,47 @@ function shuffleArray<T>(array: T[], seed: number): T[] {
     return arr;
 }
 
-// Check if two positions are adjacent
+/**
+ * Hash a string to a consistent numeric seed using djb2 algorithm
+ * @param str - String to hash
+ * @returns Positive integer hash value
+ */
+function hashString(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
+}
+
+// ============================================================================
+// Seed Generation
+// ============================================================================
+
+/**
+ * Generate a random human-friendly seed name
+ * @returns Seed name in format "AdjectiveNoun###" (e.g., "BraveWheat042")
+ */
+function generateRandomFriendlyName(): string {
+    const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+    const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
+    const num = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    return `${adj}${noun}${num}`;
+}
+
+// ============================================================================
+// Board Geometry
+// ============================================================================
+
+/**
+ * Check if two board positions are adjacent (share an edge)
+ * Uses offset coordinate system for hexagonal grid
+ * @param posObj1 - First position
+ * @param posObj2 - Second position
+ * @returns True if positions are adjacent
+ */
 function areAdjacent(posObj1: Position | [number, number], posObj2: Position | [number, number]): boolean {
     const pos1 = Array.isArray(posObj1) ? posObj1 : posObj1.pos;
     const pos2 = Array.isArray(posObj2) ? posObj2 : posObj2.pos;
@@ -70,7 +131,11 @@ function areAdjacent(posObj1: Position | [number, number], posObj2: Position | [
     }
 }
 
-// Get pip value for a number
+/**
+ * Get pip value for a dice number (probability weight)
+ * @param num - Dice roll value (2-12)
+ * @returns Pip value (0-5)
+ */
 function getPipValue(num: number): number {
     const pipMap: Record<number, number> = {
         2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3, 11: 2, 12: 1
@@ -78,7 +143,18 @@ function getPipValue(num: number): number {
     return pipMap[num] || 0;
 }
 
-// Calculate CIBI (Catan Island Balance Index)
+// ============================================================================
+// Balance Calculation
+// ============================================================================
+
+/**
+ * Calculate CIBI (Catan Island Balance Index)
+ * Measures resource distribution balance from 0-100 (higher is better)
+ * @param shuffledResources - Array of resources assigned to tiles
+ * @param shuffledNumbers - Array of number tokens
+ * @param nonDesertIndices - Indices of non-desert tiles
+ * @returns CIBI score and pip totals per resource
+ */
 function calculateCIBI(
     shuffledResources: (Resource | undefined)[],
     shuffledNumbers: NumberToken[],
@@ -111,7 +187,7 @@ function calculateCIBI(
 
     // Lower variance = better balance. Scale to 0-100 (100 = perfect)
     const variance = totalVariance / pipValues.length;
-    const score = Math.max(0, Math.min(100, 100 - (variance * 2)));
+    const score = Math.max(0, Math.min(100, 100 - (variance * CIBI_VARIANCE_MULTIPLIER)));
 
     return {
         score: Math.round(score),
@@ -119,30 +195,67 @@ function calculateCIBI(
     };
 }
 
-// Generate a random friendly seed name
-function generateRandomFriendlyName(): string {
-    const adjectives = ['Swift', 'Noble', 'Brave', 'Bright', 'Lucky', 'Grand', 'Wise', 'Bold', 'Epic', 'Pure'];
-    const nouns = ['Sheep', 'Wheat', 'Wood', 'Brick', 'Stone', 'Harbor', 'Island', 'Coast', 'Trade', 'Road'];
+/**
+ * Check if number token placement meets balance requirements
+ * @param shuffledNumbers - Array of number tokens
+ * @param shuffledResources - Array of resources (unused but kept for future)
+ * @param nonDesertIndices - Indices of non-desert tiles
+ * @returns True if placement is balanced
+ */
+function isBalancedPlacement(
+    shuffledNumbers: NumberToken[],
+    _shuffledResources: (Resource | undefined)[],
+    nonDesertIndices: number[]
+): boolean {
+    // Rule 1: No adjacent red numbers (6, 8)
+    for (let i = 0; i < nonDesertIndices.length; i++) {
+        const idx1 = nonDesertIndices[i];
+        const num1 = shuffledNumbers[i];
 
-    const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
-    const noun = nouns[Math.floor(Math.random() * nouns.length)];
-    const num = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+        if (!num1 || !num1.red) continue;
 
-    return `${adj}${noun}${num}`;
-}
+        for (let j = i + 1; j < nonDesertIndices.length; j++) {
+            const idx2 = nonDesertIndices[j];
+            const num2 = shuffledNumbers[j];
 
-// Hash a string to a consistent numeric seed
-function hashString(str: string): number {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash; // Convert to 32bit integer
+            if (!num2) continue;
+
+            if (num2.red && areAdjacent(landPositions[idx1], landPositions[idx2])) {
+                return false;
+            }
+        }
     }
-    return Math.abs(hash);
+
+    // Rule 2: No clusters of high-pip numbers (prevent 3+ adjacent high-value tiles)
+    for (let i = 0; i < nonDesertIndices.length; i++) {
+        const idx1 = nonDesertIndices[i];
+        const num1 = shuffledNumbers[i];
+
+        if (!num1 || num1.pipValue < HIGH_PIP_THRESHOLD) continue;
+
+        let highPipNeighbors = 0;
+        for (let j = 0; j < nonDesertIndices.length; j++) {
+            if (i === j) continue;
+            const idx2 = nonDesertIndices[j];
+            const num2 = shuffledNumbers[j];
+
+            if (num2 && num2.pipValue >= HIGH_PIP_THRESHOLD && areAdjacent(landPositions[idx1], landPositions[idx2])) {
+                highPipNeighbors++;
+            }
+        }
+
+        if (highPipNeighbors > MAX_ADJACENT_HIGH_PIPS) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
-// Game data
+// ============================================================================
+// Game Data
+// ============================================================================
+
 const landPositions: Position[] = [
     {pos: [1, 0], edge: true}, {pos: [1, 1], edge: true}, {pos: [1, 2], edge: true},
     {pos: [2, 0], edge: true}, {pos: [2, 1], edge: false}, {pos: [2, 2], edge: false}, {pos: [2, 3], edge: true},
@@ -202,76 +315,30 @@ const resourceLabels: Record<Resource, string> = {
     desert: 'Desert'
 };
 
-// Check if number placement is balanced
-function isBalancedPlacement(
-    shuffledNumbers: NumberToken[],
-    _shuffledResources: (Resource | undefined)[],
-    nonDesertIndices: number[]
-): boolean {
-    // Check 1: No adjacent red numbers (6, 8)
-    for (let i = 0; i < nonDesertIndices.length; i++) {
-        const idx1 = nonDesertIndices[i];
-        const num1 = shuffledNumbers[i];
+// ============================================================================
+// Main Board Generation
+// ============================================================================
 
-        if (!num1 || !num1.red) continue;
-
-        for (let j = i + 1; j < nonDesertIndices.length; j++) {
-            const idx2 = nonDesertIndices[j];
-            const num2 = shuffledNumbers[j];
-
-            if (!num2) continue;
-
-            if (num2.red && areAdjacent(landPositions[idx1], landPositions[idx2])) {
-                return false;
-            }
-        }
-    }
-
-    // Check 2: No clusters of high-pip numbers (prevent 3+ adjacent high-value tiles)
-    for (let i = 0; i < nonDesertIndices.length; i++) {
-        const idx1 = nonDesertIndices[i];
-        const num1 = shuffledNumbers[i];
-
-        if (!num1 || num1.pipValue < 4) continue;
-
-        let highPipNeighbors = 0;
-        for (let j = 0; j < nonDesertIndices.length; j++) {
-            if (i === j) continue;
-            const idx2 = nonDesertIndices[j];
-            const num2 = shuffledNumbers[j];
-
-            if (num2 && num2.pipValue >= 4 && areAdjacent(landPositions[idx1], landPositions[idx2])) {
-                highPipNeighbors++;
-            }
-        }
-
-        if (highPipNeighbors >= 3) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-// Main shuffle function
+/**
+ * Main function to shuffle and generate a new Catan board
+ * Generates resources, numbers, calculates CIBI, and updates the UI
+ */
 function shuffleBoard(): void {
     const seedInput = (document.getElementById('seedInput') as HTMLInputElement).value;
     let friendlySeedName: string;
 
+    // Determine seed source
     if (seedInput) {
-        // User provided a seed name - use it
         friendlySeedName = seedInput;
     } else {
-        // Generate a random friendly name
         friendlySeedName = generateRandomFriendlyName();
     }
 
-    // Hash the friendly name to get the numeric seed
+    // Hash friendly name to numeric seed for reproducibility
     const seed = hashString(friendlySeedName);
 
-    // Shuffle resources
+    // Shuffle resources - place deserts on edge tiles
     const edgeIndices = landPositions.map((p, i) => p.edge ? i : -1).filter(i => i >= 0);
-
     const shuffledResources: (Resource | undefined)[] = new Array(30);
     const nonDesertResources = resources.filter(r => r !== 'desert');
 
@@ -293,39 +360,67 @@ function shuffleBoard(): void {
         shuffledResources[idx] = shuffledNonDesert[i];
     });
 
-    // Shuffle numbers with better balancing
+    // Shuffle numbers with balance validation
     let shuffledNumbers = shuffleArray(numbers, seed + 1000);
     const nonDesertIndices = shuffledResources.map((r, i) => r !== 'desert' ? i : -1).filter(i => i >= 0);
 
     let attempts = 0;
-    while (attempts < 200 && !isBalancedPlacement(shuffledNumbers, shuffledResources, nonDesertIndices)) {
+    while (attempts < BALANCE_ATTEMPTS && !isBalancedPlacement(shuffledNumbers, shuffledResources, nonDesertIndices)) {
         shuffledNumbers = shuffleArray(numbers, seed + 1000 + attempts);
         attempts++;
     }
 
-    // Calculate CIBI score and resource pip totals
+    // Calculate balance metrics
     const cibiResult = calculateCIBI(shuffledResources, shuffledNumbers, nonDesertIndices);
 
-    // Update displays
+    // Update UI displays
+    updateSeedDisplay(friendlySeedName);
+    updateStatsDisplay(cibiResult);
+    updateBoardDisplay(shuffledResources, shuffledNumbers, resourceLabels);
+}
+
+// ============================================================================
+// UI Update Functions
+// ============================================================================
+
+/**
+ * Update seed display in UI
+ */
+function updateSeedDisplay(seedName: string): void {
     const seedDisplay = document.getElementById('seedDisplay');
+    if (seedDisplay) seedDisplay.textContent = seedName;
+}
+
+/**
+ * Update statistics displays (CIBI and resource pips)
+ */
+function updateStatsDisplay(cibiResult: CIBIResult): void {
     const cibiDisplay = document.getElementById('cibiDisplay');
-    if (seedDisplay) seedDisplay.textContent = friendlySeedName;
     if (cibiDisplay) cibiDisplay.textContent = cibiResult.score.toString();
 
-    // Update resource distribution displays
-    const woodPipsEl = document.getElementById('woodPips');
-    const wheatPipsEl = document.getElementById('wheatPips');
-    const sheepPipsEl = document.getElementById('sheepPips');
-    const orePipsEl = document.getElementById('orePips');
-    const brickPipsEl = document.getElementById('brickPips');
+    const pipDisplays = {
+        wood: document.getElementById('woodPips'),
+        wheat: document.getElementById('wheatPips'),
+        sheep: document.getElementById('sheepPips'),
+        ore: document.getElementById('orePips'),
+        brick: document.getElementById('brickPips')
+    };
 
-    if (woodPipsEl) woodPipsEl.textContent = cibiResult.pipTotals.wood.toString();
-    if (wheatPipsEl) wheatPipsEl.textContent = cibiResult.pipTotals.wheat.toString();
-    if (sheepPipsEl) sheepPipsEl.textContent = cibiResult.pipTotals.sheep.toString();
-    if (orePipsEl) orePipsEl.textContent = cibiResult.pipTotals.ore.toString();
-    if (brickPipsEl) brickPipsEl.textContent = cibiResult.pipTotals.brick.toString();
+    Object.entries(pipDisplays).forEach(([resource, element]) => {
+        if (element) {
+            element.textContent = cibiResult.pipTotals[resource as keyof ResourcePipTotals].toString();
+        }
+    });
+}
 
-    // Update land hexes
+/**
+ * Update board hexagon displays
+ */
+function updateBoardDisplay(
+    shuffledResources: (Resource | undefined)[],
+    shuffledNumbers: NumberToken[],
+    labels: Record<Resource, string>
+): void {
     const hexes = document.querySelectorAll<HTMLElement>('.hex:not(.water)');
     let numberIndex = 0;
 
@@ -334,11 +429,10 @@ function shuffleBoard(): void {
         if (!resource) return;
 
         hex.className = 'hex ' + resource;
-
         const inner = hex.querySelector<HTMLElement>('.hex-inner');
         if (!inner) return;
 
-        const label = resourceLabels[resource];
+        const label = labels[resource];
 
         if (resource === 'desert') {
             inner.innerHTML = `
@@ -348,14 +442,13 @@ function shuffleBoard(): void {
                 </div>
             `;
         } else {
-            const num = shuffledNumbers[numberIndex];
-            numberIndex++;
+            const num = shuffledNumbers[numberIndex++];
             if (num) {
-                const numberClass = num.red ? 'number red' : 'number black';
+                const colorClass = num.red ? 'red' : 'black';
                 inner.innerHTML = `
                     <div class="resource-label">${label}</div>
                     <div class="number-token">
-                        <div class="${numberClass}">${num.val}</div>
+                        <div class="number ${colorClass}">${num.val}</div>
                         <div class="token-letter">${num.letter}</div>
                         <div class="pips">${num.pips}</div>
                     </div>
@@ -364,13 +457,11 @@ function shuffleBoard(): void {
         }
     });
 
-    // Water hexes remain empty (no harbors)
+    // Clear water hexes (no harbors)
     const waterHexes = document.querySelectorAll<HTMLElement>('.hex.water');
     waterHexes.forEach((hex) => {
         const inner = hex.querySelector<HTMLElement>('.hex-inner');
-        if (inner) {
-            inner.innerHTML = ''; // Keep water empty
-        }
+        if (inner) inner.innerHTML = '';
     });
 }
 
