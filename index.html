@@ -239,21 +239,27 @@
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 245, 245, 0.9) 100%);
             border: 1px solid rgba(0, 0, 0, 0.2);
             border-radius: 50%;
-            width: 28px;
-            height: 28px;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 7px;
+            font-size: 10px;
             font-weight: 700;
             color: #2c2c2c;
             box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+            clip-path: none;
         }
-        
+
         .harbor-icon {
-            font-size: 10px;
-            margin-bottom: 0px;
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .hex.water.harbor .hex-inner {
+            background: linear-gradient(135deg, #e8d5b7 0%, #c9b896 100%);
+            border-color: rgba(139, 115, 85, 0.6);
         }
 
         .legend-mobile {
@@ -646,16 +652,24 @@
             {pos: [7,0], edge: true}, {pos: [7,1], edge: true}, {pos: [7,2], edge: true}
         ];
 
-        // Harbor types
-        const harbors = [
-            {icon: '⚓', ratio: '3:1', type: 'generic'},
-            {icon: '⚓', ratio: '3:1', type: 'generic'},
-            {icon: '⚓', ratio: '3:1', type: 'generic'},
-            {icon: '🌾', ratio: '2:1', type: 'wheat'},
-            {icon: '🧱', ratio: '2:1', type: 'brick'},
+        // Fixed harbors from 5-6 Extension (always at same positions)
+        const FIXED_HARBORS = {
+            11: {icon: '🐑', ratio: '2:1', type: 'sheep'},   // 3-3 joint position (left side)
+            15: {icon: '⚓', ratio: '3:1', type: 'generic'}  // 5-5 joint position (right side)
+        };
+
+        // Fixed plain water positions from 5-6 Extension
+        const FIXED_WATER = [5, 20];  // 2-2 joint and 6-6 joint positions
+
+        // Base game harbors (randomized among remaining frame positions)
+        const BASE_GAME_HARBORS = [
             {icon: '🌲', ratio: '2:1', type: 'wood'},
+            {icon: '🧱', ratio: '2:1', type: 'brick'},
+            {icon: '🌾', ratio: '2:1', type: 'wheat'},
             {icon: '⛰️', ratio: '2:1', type: 'ore'},
-            {icon: '🐑', ratio: '2:1', type: 'sheep'}
+            {icon: '⚓', ratio: '3:1', type: 'generic'},
+            {icon: '⚓', ratio: '3:1', type: 'generic'},
+            {icon: '⚓', ratio: '3:1', type: 'generic'}
         ];
 
         // Resources
@@ -795,20 +809,31 @@
                 attempts++;
             }
 
-            // Shuffle harbors
-            const shuffledHarbors = shuffleArray([...harbors], seed + 2000);
+            // Harbor placement: Fixed positions + randomized base game harbors
 
-            // Create an array of all possible water tile positions (0-21, there are 22 water tiles)
-            const allWaterPositions = Array.from({length: 22}, (_, i) => i);
+            // Start with fixed harbors from 5-6 extension
+            const harborMap = {...FIXED_HARBORS};
 
-            // Randomly select 8 positions for harbors
-            const shuffledAllPositions = shuffleArray([...allWaterPositions], seed + 3000);
-            const selectedHarborPositions = shuffledAllPositions.slice(0, 8);
+            // Get all water positions that can have randomized harbors
+            // Exclude: fixed harbor positions and fixed water positions
+            const fixedPositions = [...Object.keys(FIXED_HARBORS).map(Number), ...FIXED_WATER];
+            const availablePositions = [];
+            for (let i = 0; i < 22; i++) {
+                if (!fixedPositions.includes(i)) {
+                    availablePositions.push(i);
+                }
+            }
 
-            // Create a mapping of water hex position to harbor
-            const harborMap = {};
-            for (let i = 0; i < selectedHarborPositions.length; i++) {
-                harborMap[selectedHarborPositions[i]] = shuffledHarbors[i];
+            // Shuffle base game harbors
+            const shuffledBaseGameHarbors = shuffleArray([...BASE_GAME_HARBORS], seed + 2000);
+
+            // Shuffle available positions and select 7 for base game harbors
+            const shuffledPositions = shuffleArray([...availablePositions], seed + 3000);
+            const selectedPositions = shuffledPositions.slice(0, 7);
+
+            // Assign shuffled base game harbors to selected positions
+            for (let i = 0; i < selectedPositions.length; i++) {
+                harborMap[selectedPositions[i]] = shuffledBaseGameHarbors[i];
             }
 
             // Update land hexes
@@ -852,18 +877,23 @@
                 }
             });
 
-            // Update water hexes with randomized harbors
+            // Update water hexes with harbors (fixed + randomized)
             const waterHexes = document.querySelectorAll('.hex.water');
             waterHexes.forEach((hex, index) => {
                 const inner = hex.querySelector('.hex-inner');
 
-                // Check if this water hex should have a harbor using the map
+                // Check if this water hex should have a harbor
                 if (harborMap[index]) {
                     const harbor = harborMap[index];
+                    hex.classList.add('harbor');  // Add harbor class for styling
                     inner.innerHTML = `
-                        <div class="harbor-token"><div class="harbor-icon">${harbor.icon}</div>${harbor.ratio}</div>
+                        <div class="harbor-token">
+                            <div class="harbor-icon">${harbor.icon}</div>
+                            <div>${harbor.ratio}</div>
+                        </div>
                     `;
                 } else {
+                    hex.classList.remove('harbor');  // Remove harbor class if no harbor
                     inner.innerHTML = '';
                 }
             });
