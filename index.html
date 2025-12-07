@@ -49,6 +49,13 @@
             letter-spacing: 0.5px;
         }
 
+        .version {
+            font-size: 11px;
+            color: rgba(184, 166, 127, 0.5);
+            margin-top: 5px;
+            letter-spacing: 0.5px;
+        }
+
         .controls-mobile {
             width: 100%;
             max-width: 500px;
@@ -123,7 +130,7 @@
             position: relative;
             width: 100%;
             max-width: 500px;
-            background: rgba(255, 255, 255, 0.03);
+            background: linear-gradient(135deg, #1a5f7a 0%, #2c8ca8 50%, #1a5f7a 100%);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 20px 10px;
@@ -181,10 +188,6 @@
         .hex.ore .hex-inner { background: linear-gradient(135deg, #5a5f66 0%, #8b9299 100%); }
         .hex.brick .hex-inner { background: linear-gradient(135deg, #b54b2f 0%, #d97555 100%); }
         .hex.desert .hex-inner { background: linear-gradient(135deg, #c19a6b 0%, #d4b896 100%); }
-        .hex.water .hex-inner {
-            background: linear-gradient(135deg, #1a5f7a 0%, #2c8ca8 100%);
-            border-color: rgba(26, 95, 122, 0.4);
-        }
 
         .resource-label {
             font-size: 6px;
@@ -317,6 +320,7 @@
     <div class="header">
         <div class="title">CATAN</div>
         <div class="subtitle" id="modeSubtitle">5-6 Player • Mobile</div>
+        <div class="version" id="version"></div>
     </div>
 
     <div class="controls-mobile">
@@ -378,14 +382,7 @@
     <div class="board-container">
         <div class="board-wrapper">
             <div class="board">
-                <!-- Water frame top -->
-                <div class="hex water" style="left: 121px; top: 0px;"><div class="hex-inner"></div></div>
-                <div class="hex water" style="left: 169px; top: 0px;"><div class="hex-inner"></div></div>
-                <div class="hex water" style="left: 217px; top: 0px;"><div class="hex-inner"></div></div>
-                <div class="hex water" style="left: 265px; top: 0px;"><div class="hex-inner"></div></div>
-
                 <!-- LAND ROW 1: 3 hexes -->
-                <div class="hex water" style="left: 97px; top: 42px;"><div class="hex-inner"></div></div>
                 <div class="hex wood" style="left: 145px; top: 42px;">
                     <div class="hex-inner">
                         <div class="resource-label">Wood</div>
@@ -404,10 +401,8 @@
                         <div class="number-token"><div class="number red">6</div><div class="token-letter">C</div><div class="pips">•••••</div></div>
                     </div>
                 </div>
-                <div class="hex water" style="left: 289px; top: 42px;"><div class="hex-inner"></div></div>
 
                 <!-- LAND ROW 2: 4 hexes -->
-                <div class="hex water" style="left: 73px; top: 84px;"><div class="hex-inner"></div></div>
                 <div class="hex brick" style="left: 121px; top: 84px;">
                     <div class="hex-inner">
                         <div class="resource-label">Brick</div>
@@ -432,10 +427,8 @@
                         <div class="number-token"><div class="number black">4</div><div class="token-letter">G</div><div class="pips">•••</div></div>
                     </div>
                 </div>
-                <div class="hex water" style="left: 313px; top: 84px;"><div class="hex-inner"></div></div>
 
                 <!-- LAND ROW 3: 5 hexes -->
-                <div class="hex water" style="left: 49px; top: 126px;"><div class="hex-inner"></div></div>
                 <div class="hex sheep" style="left: 97px; top: 126px;">
                     <div class="hex-inner">
                         <div class="resource-label">Sheep</div>
@@ -466,10 +459,8 @@
                         <div class="number-token"><div class="number black">10</div><div class="token-letter">L</div><div class="pips">•••</div></div>
                     </div>
                 </div>
-                <div class="hex water" style="left: 337px; top: 126px;"><div class="hex-inner"></div></div>
 
                 <!-- LAND ROW 4: 6 hexes -->
-                <div class="hex water" style="left: 25px; top: 168px;"><div class="hex-inner"></div></div>
                 <div class="hex desert" style="left: 73px; top: 168px;">
                     <div class="hex-inner">
                         <div class="resource-label">Desert</div>
@@ -508,10 +499,8 @@
                         <div class="number-token"><div class="number black">12</div><div class="token-letter">Q</div><div class="pips">•</div></div>
                     </div>
                 </div>
-                <div class="hex water" style="left: 361px; top: 168px;"><div class="hex-inner"></div></div>
 
                 <!-- LAND ROW 5: 5 hexes -->
-                <div class="hex water" style="left: 49px; top: 210px;"><div class="hex-inner"></div></div>
                 <div class="hex ore" style="left: 97px; top: 210px;">
                     <div class="hex-inner">
                         <div class="resource-label">Ore</div>
@@ -542,10 +531,8 @@
                         <div class="number-token"><div class="number black">5</div><div class="token-letter">V</div><div class="pips">••••</div></div>
                     </div>
                 </div>
-                <div class="hex water" style="left: 337px; top: 210px;"><div class="hex-inner"></div></div>
 
                 <!-- LAND ROW 6: 4 hexes -->
-                <div class="hex water" style="left: 73px; top: 252px;"><div class="hex-inner"></div></div>
                 <div class="hex ore" style="left: 121px; top: 252px;">
                     <div class="hex-inner">
                         <div class="resource-label">Ore</div>
@@ -570,10 +557,8 @@
                         <div class="number-token"><div class="number black">9</div><div class="token-letter">Za</div><div class="pips">••••</div></div>
                     </div>
                 </div>
-                <div class="hex water" style="left: 313px; top: 252px;"><div class="hex-inner"></div></div>
 
                 <!-- LAND ROW 7: 3 hexes -->
-                <div class="hex water" style="left: 97px; top: 294px;"><div class="hex-inner"></div></div>
                 <div class="hex brick" style="left: 145px; top: 294px;">
                     <div class="hex-inner">
                         <div class="resource-label">Brick</div>
@@ -594,13 +579,6 @@
                         <div class="number-token"><div class="number black">12</div><div class="token-letter">Zc</div><div class="pips">•</div></div>
                     </div>
                 </div>
-                <div class="hex water" style="left: 289px; top: 294px;"><div class="hex-inner"></div></div>
-
-                <!-- Water frame bottom -->
-                <div class="hex water" style="left: 121px; top: 336px;"><div class="hex-inner"></div></div>
-                <div class="hex water" style="left: 169px; top: 336px;"><div class="hex-inner"></div></div>
-                <div class="hex water" style="left: 217px; top: 336px;"><div class="hex-inner"></div></div>
-                <div class="hex water" style="left: 265px; top: 336px;"><div class="hex-inner"></div></div>
             </div>
         </div>
     </div>
@@ -614,6 +592,27 @@
             <div class="legend-item">⚫ 3, 11 = Fair</div>
             <div class="legend-item">⚫ 2, 12 = Rare</div>
             <div class="legend-item">🏜️ Desert = 0</div>
+        </div>
+    </div>
+
+    <div class="legend-mobile">
+        <div class="legend-title">🎲 Dice Distribution</div>
+        <div style="font-size: 12px; line-height: 1.6;">
+            <div style="margin-bottom: 8px;">
+                <div style="opacity: 0.7; font-size: 11px; margin-bottom: 4px;">Number Count (Probability):</div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
+                    <div><strong>2, 12:</strong> 1× each (2.8%)</div>
+                    <div><strong>3, 11:</strong> 2× each (5.6%)</div>
+                    <div><strong>4, 10:</strong> 2× each (8.3%)</div>
+                    <div><strong>5, 9:</strong> 2× each (11.1%)</div>
+                    <div style="grid-column: span 2;"><strong>6, 8:</strong> 2× each (13.9%) 🔴</div>
+                </div>
+            </div>
+            <div style="opacity: 0.7; font-size: 10px; margin-top: 8px;">
+                * Probability = chance to roll with 2 dice<br>
+                * 5-6 Player: 28 number tokens + 2 deserts<br>
+                * 4 Player: 18 number tokens + 1 desert
+            </div>
         </div>
     </div>
 

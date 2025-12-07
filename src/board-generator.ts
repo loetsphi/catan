@@ -42,6 +42,8 @@ interface GameConfig {
 // Constants
 // ============================================================================
 
+const VERSION = '1.0.0';
+
 const BALANCE_ATTEMPTS = 200;
 const HIGH_PIP_THRESHOLD = 4;
 const MAX_ADJACENT_HIGH_PIPS = 2;
@@ -408,18 +410,17 @@ function setGameMode(mode: GameMode): void {
  * Hides extra tiles when in 4-player mode to create 3-4-5-4-3 layout
  */
 function updateBoardVisibility(): void {
+    const landHexes = document.querySelectorAll<HTMLElement>('.hex');
+
     if (currentGameMode === '5-6-player') {
         // Show all hexes for 5-6 player mode
-        const allHexes = document.querySelectorAll<HTMLElement>('.hex');
-        allHexes.forEach(hex => {
+        landHexes.forEach(hex => {
             hex.style.display = '';
         });
         return;
     }
 
     // 4-player mode: create 3-4-5-4-3 layout from 3-4-5-6-5-4-3 layout
-    const landHexes = document.querySelectorAll<HTMLElement>('.hex:not(.water)');
-
     // Define which land tiles to show for 4-player (3-4-5-4-3)
     // Rows 1-3: show all (indices 0-11: 3+4+5 tiles)
     // Row 4: show middle 4 of 6 (indices 13-16, hide 12 and 17)
@@ -438,41 +439,6 @@ function updateBoardVisibility(): void {
             hex.style.display = '';
         } else {
             hex.style.display = 'none';
-        }
-    });
-
-    // Update water tiles for 4-player mode
-    // Hide water tiles that are outside the 3-4-5-4-3 boundary
-    const waterHexes = document.querySelectorAll<HTMLElement>('.hex.water');
-    waterHexes.forEach(hex => {
-        const top = parseInt(hex.style.top || '0');
-        const left = parseInt(hex.style.left || '0');
-
-        // Show water tiles for rows 1-3 (top <= 126px)
-        // For row 4 (top = 168px): hide leftmost and rightmost water
-        // For row 5 (top = 210px): hide leftmost and rightmost water
-        // Hide all water for rows 6-7 (top >= 252px)
-
-        if (top >= 252) {
-            // Rows 6-7: hide all water
-            hex.style.display = 'none';
-        } else if (top === 168) {
-            // Row 4: hide water at left=25 and left=361
-            if (left === 25 || left === 361) {
-                hex.style.display = 'none';
-            } else {
-                hex.style.display = '';
-            }
-        } else if (top === 210) {
-            // Row 5: hide water at left=49 and left=337
-            if (left === 49 || left === 337) {
-                hex.style.display = 'none';
-            } else {
-                hex.style.display = '';
-            }
-        } else {
-            // Rows 1-3: show all water
-            hex.style.display = '';
         }
     });
 }
@@ -635,13 +601,6 @@ function updateBoardDisplay(
             }
         }
     });
-
-    // Clear water hexes (no harbors)
-    const waterHexes = document.querySelectorAll<HTMLElement>('.hex.water');
-    waterHexes.forEach((hex) => {
-        const inner = hex.querySelector<HTMLElement>('.hex-inner');
-        if (inner) inner.innerHTML = '';
-    });
 }
 
 // Make functions available globally
@@ -651,4 +610,10 @@ function updateBoardDisplay(
 // Initialize board visibility on page load
 document.addEventListener('DOMContentLoaded', () => {
     updateBoardVisibility();
+
+    // Display version
+    const versionElement = document.getElementById('version');
+    if (versionElement) {
+        versionElement.textContent = `v${VERSION}`;
+    }
 });
