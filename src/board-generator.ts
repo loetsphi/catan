@@ -398,6 +398,28 @@ function setGameMode(mode: GameMode): void {
     if (subtitle) {
         subtitle.textContent = mode === '4-player' ? '4 Player • Mobile' : '5-6 Player • Mobile';
     }
+
+    // Update board visibility
+    updateBoardVisibility();
+}
+
+/**
+ * Update board visibility based on current game mode
+ * Hides extra tiles when in 4-player mode
+ */
+function updateBoardVisibility(): void {
+    const config = getCurrentConfig();
+    const tileCount = config.positions.length;
+
+    // Hide all non-water land hexes first
+    const landHexes = document.querySelectorAll<HTMLElement>('.hex:not(.water)');
+    landHexes.forEach((hex, index) => {
+        if (index < tileCount) {
+            hex.style.display = '';
+        } else {
+            hex.style.display = 'none';
+        }
+    });
 }
 
 // ============================================================================
