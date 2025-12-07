@@ -1,0 +1,17 @@
+{
+  "name": "catan-board-generator",
+  "version": "1.0.0",
+  "description": "A beautiful, mobile-optimized randomizer for Catan 5-6 player expansion boards",
+  "scripts": {
+    "build": "tsc && npm run copy-html",
+    "copy-html": "cp index.html dist/",
+    "watch": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "keywords": ["catan", "board-generator", "game"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
