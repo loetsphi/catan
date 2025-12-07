@@ -335,7 +335,7 @@ function shuffleBoard(): void {
     }
 
     // Hash friendly name to numeric seed for reproducibility
-    const seed = hashString(friendlySeedName);
+    let seed = hashString(friendlySeedName);
 
     // Shuffle resources - place deserts on edge tiles
     const edgeIndices = landPositions.map((p, i) => p.edge ? i : -1).filter(i => i >= 0);
@@ -361,13 +361,20 @@ function shuffleBoard(): void {
     });
 
     // Shuffle numbers with balance validation
+    // Keep trying until we find a valid placement that follows all rules
     let shuffledNumbers = shuffleArray(numbers, seed + 1000);
     const nonDesertIndices = shuffledResources.map((r, i) => r !== 'desert' ? i : -1).filter(i => i >= 0);
 
     let attempts = 0;
-    while (attempts < BALANCE_ATTEMPTS && !isBalancedPlacement(shuffledNumbers, shuffledResources, nonDesertIndices)) {
-        shuffledNumbers = shuffleArray(numbers, seed + 1000 + attempts);
+    while (!isBalancedPlacement(shuffledNumbers, shuffledResources, nonDesertIndices)) {
         attempts++;
+        shuffledNumbers = shuffleArray(numbers, seed + 1000 + attempts);
+
+        // Safety check: if we've tried too many times, modify the seed
+        if (attempts > 1000) {
+            attempts = 0;
+            seed = seed + 100000; // Jump to a different seed space
+        }
     }
 
     // Calculate balance metrics
