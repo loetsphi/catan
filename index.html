@@ -57,6 +57,20 @@
             letter-spacing: 0.5px;
         }
 
+        .desktop-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .controls-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         .controls-mobile {
             width: 100%;
             max-width: 500px;
@@ -359,15 +373,14 @@
         @media (min-width: 1024px) {
             body {
                 padding: 30px;
-                flex-direction: row;
-                justify-content: center;
-                align-items: flex-start;
-                gap: 40px;
-                flex-wrap: wrap;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
             }
 
             .header {
                 width: 100%;
+                max-width: 1350px;
                 margin-bottom: 20px;
             }
 
@@ -381,6 +394,16 @@
 
             .version {
                 font-size: 12px;
+            }
+
+            .desktop-wrapper {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 40px;
+                width: 100%;
+                max-width: 1350px;
             }
 
             .controls-container {
@@ -487,6 +510,7 @@
         <div class="version" id="version"></div>
     </div>
 
+    <div class="desktop-wrapper">
     <div class="controls-container">
     <div class="controls-mobile">
         <div class="control-title">🎮 Game Mode</div>
@@ -542,6 +566,19 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="legend-mobile">
+        <div class="legend-title">📊 Number Guide</div>
+        <div class="legend-grid">
+            <div class="legend-item">🔴 6, 8 = Best</div>
+            <div class="legend-item">⚫ 5, 9 = Great</div>
+            <div class="legend-item">⚫ 4, 10 = Good</div>
+            <div class="legend-item">⚫ 3, 11 = Fair</div>
+            <div class="legend-item">⚫ 2, 12 = Rare</div>
+            <div class="legend-item">🏜️ Desert = 0</div>
+        </div>
+    </div>
     </div>
 
     <div class="board-container">
@@ -745,18 +782,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="legend-mobile">
-        <div class="legend-title">📊 Number Guide</div>
-        <div class="legend-grid">
-            <div class="legend-item">🔴 6, 8 = Best</div>
-            <div class="legend-item">⚫ 5, 9 = Great</div>
-            <div class="legend-item">⚫ 4, 10 = Good</div>
-            <div class="legend-item">⚫ 3, 11 = Fair</div>
-            <div class="legend-item">⚫ 2, 12 = Rare</div>
-            <div class="legend-item">🏜️ Desert = 0</div>
         </div>
     </div>
     </div>
