@@ -134,6 +134,82 @@
             transform: scale(0.98);
         }
 
+        .favorite-btn {
+            padding: 10px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 193, 7, 0.2) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 8px;
+            color: #f4e4c1;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .favorite-btn:hover {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 193, 7, 0.3) 100%);
+            border-color: rgba(255, 215, 0, 0.7);
+        }
+
+        .favorite-btn:active {
+            transform: scale(0.98);
+        }
+
+        .favorite-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .favorite-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Tooltip styles */
+        [data-tooltip] {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dotted rgba(255, 255, 255, 0.5);
+        }
+
+        [data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 20, 40, 0.95);
+            color: #f4e4c1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            white-space: nowrap;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 5px;
+            font-weight: 400;
+            line-height: 1.4;
+        }
+
+        [data-tooltip]:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: rgba(20, 20, 40, 0.95);
+            z-index: 1000;
+        }
+
         .hint-text {
             font-size: 11px;
             opacity: 0.7;
@@ -180,6 +256,25 @@
             transform: scale(1.1);
             z-index: 100;
             filter: brightness(1.15);
+        }
+
+        .hex.shuffling {
+            animation: hexShuffle 0.6s ease-in-out;
+        }
+
+        @keyframes hexShuffle {
+            0% {
+                transform: scale(1) rotateY(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(0.8) rotateY(90deg);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1) rotateY(180deg);
+                opacity: 1;
+            }
         }
 
         .hex-inner {
@@ -519,23 +614,33 @@
             <input type="text" class="seed-input" id="seedInput" placeholder="Seed (optional)">
             <button class="shuffle-btn" onclick="shuffleBoard()">Shuffle</button>
         </div>
+        <div class="control-row" style="margin-top: 10px;">
+            <button class="favorite-btn" onclick="saveFavorite()" style="flex: 1;">⭐ Save Favorite</button>
+            <button class="favorite-btn" onclick="toggleFavoritesList()" style="flex: 1;">📋 View Saved</button>
+        </div>
+        <div id="favoritesList" style="display: none; margin-top: 10px; max-height: 200px; overflow-y: auto;"></div>
         <div class="hint-text">Same seed = same layout</div>
     </div>
 
     <div class="controls-mobile">
         <div class="control-title">📊 Board Stats</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; margin-bottom: 15px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; font-size: 13px; margin-bottom: 15px;">
             <div>
                 <div style="opacity: 0.7;">Seed:</div>
                 <div id="seedDisplay" style="color: #f4e4c1; font-weight: 600;">-</div>
             </div>
             <div>
-                <div style="opacity: 0.7;">CIBI Score:</div>
+                <div style="opacity: 0.7;" data-tooltip="Catan Island Balance Index: Lower scores = more balanced resource distribution">CIBI:</div>
                 <div id="cibiDisplay" style="color: #f4e4c1; font-weight: 600;">-</div>
             </div>
+            <div>
+                <div style="opacity: 0.7;" data-tooltip="Fairness Score: 100 = perfectly fair, lower = unbalanced">Fair:</div>
+                <div id="fairnessDisplay" style="color: #f4e4c1; font-weight: 600;">-</div>
+            </div>
         </div>
+        <button onclick="toggleSettlementSuggestions()" id="settlementBtn" style="width: 100%; padding: 10px; background: linear-gradient(135deg, rgba(74, 109, 140, 0.3) 0%, rgba(107, 140, 175, 0.3) 100%); border: 2px solid rgba(74, 109, 140, 0.5); border-radius: 8px; color: #f4e4c1; font-size: 14px; font-weight: 600; font-family: 'Cinzel', serif; cursor: pointer; margin-bottom: 15px;">🏘️ Show Best Spots</button>
         <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 12px;">
-            <div style="opacity: 0.8; font-size: 12px; margin-bottom: 8px; font-family: 'Cinzel', serif;">Resource Distribution (Pip Values)</div>
+            <div style="opacity: 0.8; font-size: 12px; margin-bottom: 8px; font-family: 'Cinzel', serif;" data-tooltip="Total pip value for each resource (higher = more production)">Resource Distribution (Pip Values)</div>
             <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; font-size: 11px;">
                 <div style="text-align: center;">
                     <div style="opacity: 0.7;">🌲</div>
