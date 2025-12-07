@@ -314,6 +314,141 @@
             border-color: #8badcc;
             color: #f4e4c1;
         }
+
+        /* ============================================
+           RESPONSIVE DESIGN - MEDIA QUERIES
+           ============================================ */
+
+        /* Tablet (768px - 1024px) */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            body {
+                padding: 25px 20px;
+            }
+
+            .title {
+                font-size: 36px;
+            }
+
+            .subtitle {
+                font-size: 15px;
+            }
+
+            .controls-mobile {
+                max-width: 650px;
+                padding: 20px;
+            }
+
+            .board-container {
+                max-width: 650px;
+                padding: 30px 20px;
+            }
+
+            .board {
+                width: 550px;
+                height: 520px;
+                transform: scale(1.1);
+            }
+
+            .legend-mobile {
+                max-width: 650px;
+            }
+        }
+
+        /* Desktop/Laptop (1024px and up) */
+        @media (min-width: 1024px) {
+            body {
+                padding: 30px;
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 30px;
+                flex-wrap: wrap;
+            }
+
+            .header {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            .title {
+                font-size: 42px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+
+            .version {
+                font-size: 12px;
+            }
+
+            .controls-container {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                width: 350px;
+            }
+
+            .controls-mobile {
+                max-width: 100%;
+                width: 100%;
+                padding: 20px;
+                margin-bottom: 0;
+            }
+
+            .control-title {
+                font-size: 15px;
+            }
+
+            .board-container {
+                max-width: 700px;
+                width: 700px;
+                padding: 40px 30px;
+                margin-bottom: 0;
+            }
+
+            .board {
+                width: 600px;
+                height: 570px;
+                transform: scale(1.2);
+            }
+
+            .board-wrapper {
+                padding: 20px 0;
+            }
+
+            .legend-mobile {
+                max-width: 350px;
+                width: 100%;
+                margin-bottom: 0;
+            }
+
+            .legend-title {
+                font-size: 15px;
+            }
+        }
+
+        /* Large Desktop (1440px and up) */
+        @media (min-width: 1440px) {
+            .board-container {
+                max-width: 800px;
+                width: 800px;
+            }
+
+            .board {
+                width: 700px;
+                height: 665px;
+                transform: scale(1.4);
+            }
+
+            .controls-container {
+                width: 400px;
+            }
+
+            .legend-mobile {
+                max-width: 400px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -323,6 +458,7 @@
         <div class="version" id="version"></div>
     </div>
 
+    <div class="controls-container">
     <div class="controls-mobile">
         <div class="control-title">🎮 Game Mode</div>
         <div class="mode-selector">
@@ -352,7 +488,7 @@
                 <div id="cibiDisplay" style="color: #f4e4c1; font-weight: 600;">-</div>
             </div>
         </div>
-        <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 12px; margin-bottom: 12px;">
+        <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 12px;">
             <div style="opacity: 0.8; font-size: 12px; margin-bottom: 8px; font-family: 'Cinzel', serif;">Resource Distribution (Pip Values)</div>
             <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; font-size: 11px;">
                 <div style="text-align: center;">
@@ -374,51 +510,6 @@
                 <div style="text-align: center;">
                     <div style="opacity: 0.7;">🧱</div>
                     <div id="brickPips" style="color: #d97555; font-weight: 700;">-</div>
-                </div>
-            </div>
-        </div>
-        <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 12px;">
-            <div style="opacity: 0.8; font-size: 12px; margin-bottom: 8px; font-family: 'Cinzel', serif;">Number Distribution (Count on Board)</div>
-            <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; font-size: 11px;">
-                <div style="text-align: center;">
-                    <div style="opacity: 0.7; font-size: 10px;">2</div>
-                    <div id="num2Count" style="color: #b8a67f; font-weight: 700;">-</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="opacity: 0.7; font-size: 10px;">3</div>
-                    <div id="num3Count" style="color: #b8a67f; font-weight: 700;">-</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="opacity: 0.7; font-size: 10px;">4</div>
-                    <div id="num4Count" style="color: #b8a67f; font-weight: 700;">-</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="opacity: 0.7; font-size: 10px;">5</div>
-                    <div id="num5Count" style="color: #b8a67f; font-weight: 700;">-</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="opacity: 0.7; font-size: 10px;">6</div>
-                    <div id="num6Count" style="color: #ff6b6b; font-weight: 700;">-</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="opacity: 0.7; font-size: 10px;">8</div>
-                    <div id="num8Count" style="color: #ff6b6b; font-weight: 700;">-</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="opacity: 0.7; font-size: 10px;">9</div>
-                    <div id="num9Count" style="color: #b8a67f; font-weight: 700;">-</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="opacity: 0.7; font-size: 10px;">10</div>
-                    <div id="num10Count" style="color: #b8a67f; font-weight: 700;">-</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="opacity: 0.7; font-size: 10px;">11</div>
-                    <div id="num11Count" style="color: #b8a67f; font-weight: 700;">-</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="opacity: 0.7; font-size: 10px;">12</div>
-                    <div id="num12Count" style="color: #b8a67f; font-weight: 700;">-</div>
                 </div>
             </div>
         </div>
@@ -638,6 +729,7 @@
             <div class="legend-item">⚫ 2, 12 = Rare</div>
             <div class="legend-item">🏜️ Desert = 0</div>
         </div>
+    </div>
     </div>
 
     <script src="board-generator.js"></script>
