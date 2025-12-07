@@ -798,9 +798,15 @@
                 attempts++;
             }
 
-            // Shuffle harbors
-            const shuffledHarbors = shuffleArray(harbors, seed + 2000);
-            const shuffledHarborPositions = shuffleArray(harborPositions, seed + 3000);
+            // Shuffle harbors and their positions
+            const shuffledHarbors = shuffleArray([...harbors], seed + 2000);
+            const shuffledHarborPositions = shuffleArray([...harborPositions], seed + 3000);
+
+            // Create a mapping of water hex position to harbor
+            const harborMap = {};
+            for (let i = 0; i < shuffledHarborPositions.length; i++) {
+                harborMap[shuffledHarborPositions[i]] = shuffledHarbors[i];
+            }
 
             // Update land hexes
             const hexes = document.querySelectorAll('.hex:not(.water)');
@@ -848,10 +854,9 @@
             waterHexes.forEach((hex, index) => {
                 const inner = hex.querySelector('.hex-inner');
 
-                // Check if this water hex should have a harbor
-                const harborIndex = shuffledHarborPositions.indexOf(index);
-                if (harborIndex !== -1 && harborIndex < shuffledHarbors.length) {
-                    const harbor = shuffledHarbors[harborIndex];
+                // Check if this water hex should have a harbor using the map
+                if (harborMap[index]) {
+                    const harbor = harborMap[index];
                     inner.innerHTML = `
                         <div class="harbor-token"><div class="harbor-icon">${harbor.icon}</div>${harbor.ratio}</div>
                     `;
