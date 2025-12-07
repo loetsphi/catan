@@ -1,5 +1,5 @@
 // Type definitions
-type ResourceType = 'wood' | 'wheat' | 'sheep' | 'ore' | 'brick' | 'desert';
+type Resource = 'wood' | 'wheat' | 'sheep' | 'ore' | 'brick' | 'desert';
 
 interface NumberToken {
     val: number;
@@ -9,7 +9,14 @@ interface NumberToken {
     pipValue: number;
 }
 
-interface LandPosition {
+interface Tile {
+    resource: Resource;
+    number?: NumberToken;
+    position: [number, number];
+    isEdge: boolean;
+}
+
+interface Position {
     pos: [number, number];
     edge: boolean;
 }
@@ -44,7 +51,7 @@ function shuffleArray<T>(array: T[], seed: number): T[] {
 }
 
 // Check if two positions are adjacent
-function areAdjacent(posObj1: LandPosition | [number, number], posObj2: LandPosition | [number, number]): boolean {
+function areAdjacent(posObj1: Position | [number, number], posObj2: Position | [number, number]): boolean {
     const pos1 = Array.isArray(posObj1) ? posObj1 : posObj1.pos;
     const pos2 = Array.isArray(posObj2) ? posObj2 : posObj2.pos;
     const [row1, col1] = pos1;
@@ -73,7 +80,7 @@ function getPipValue(num: number): number {
 
 // Calculate CIBI (Catan Island Balance Index)
 function calculateCIBI(
-    shuffledResources: (ResourceType | undefined)[],
+    shuffledResources: (Resource | undefined)[],
     shuffledNumbers: NumberToken[],
     nonDesertIndices: number[]
 ): CIBIResult {
@@ -136,7 +143,7 @@ function hashString(str: string): number {
 }
 
 // Game data
-const landPositions: LandPosition[] = [
+const landPositions: Position[] = [
     {pos: [1, 0], edge: true}, {pos: [1, 1], edge: true}, {pos: [1, 2], edge: true},
     {pos: [2, 0], edge: true}, {pos: [2, 1], edge: false}, {pos: [2, 2], edge: false}, {pos: [2, 3], edge: true},
     {pos: [3, 0], edge: true}, {pos: [3, 1], edge: false}, {pos: [3, 2], edge: false}, {pos: [3, 3], edge: false}, {pos: [3, 4], edge: true},
@@ -146,7 +153,7 @@ const landPositions: LandPosition[] = [
     {pos: [7, 0], edge: true}, {pos: [7, 1], edge: true}, {pos: [7, 2], edge: true}
 ];
 
-const resources: ResourceType[] = [
+const resources: Resource[] = [
     'wood', 'wood', 'wood', 'wood', 'wood', 'wood',
     'wheat', 'wheat', 'wheat', 'wheat', 'wheat', 'wheat',
     'sheep', 'sheep', 'sheep', 'sheep', 'sheep', 'sheep',
@@ -186,7 +193,7 @@ const numbers: NumberToken[] = [
     {val: 12, letter: 'Zc', pips: '•', red: false, pipValue: 1}
 ];
 
-const resourceLabels: Record<ResourceType, string> = {
+const resourceLabels: Record<Resource, string> = {
     wood: 'Wood',
     wheat: 'Wheat',
     sheep: 'Sheep',
@@ -198,7 +205,7 @@ const resourceLabels: Record<ResourceType, string> = {
 // Check if number placement is balanced
 function isBalancedPlacement(
     shuffledNumbers: NumberToken[],
-    _shuffledResources: (ResourceType | undefined)[],
+    _shuffledResources: (Resource | undefined)[],
     nonDesertIndices: number[]
 ): boolean {
     // Check 1: No adjacent red numbers (6, 8)
@@ -265,7 +272,7 @@ function shuffleBoard(): void {
     // Shuffle resources
     const edgeIndices = landPositions.map((p, i) => p.edge ? i : -1).filter(i => i >= 0);
 
-    const shuffledResources: (ResourceType | undefined)[] = new Array(30);
+    const shuffledResources: (Resource | undefined)[] = new Array(30);
     const nonDesertResources = resources.filter(r => r !== 'desert');
 
     const shuffledEdges = shuffleArray(edgeIndices, seed);
