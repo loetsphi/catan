@@ -112,37 +112,27 @@ function calculateCIBI(
     };
 }
 
-// Word lists for friendly seed names
-const ADJECTIVES = ['Swift', 'Noble', 'Brave', 'Bright', 'Lucky', 'Grand', 'Wise', 'Bold', 'Epic', 'Pure'];
-const NOUNS = ['Sheep', 'Wheat', 'Wood', 'Brick', 'Stone', 'Harbor', 'Island', 'Coast', 'Trade', 'Road'];
-
 // Generate human-friendly seed name
 function generateFriendlySeed(numericSeed: number): string {
-    const adj = ADJECTIVES[Math.floor((numericSeed / 1000) % ADJECTIVES.length)];
-    const noun = NOUNS[Math.floor((numericSeed / 100) % NOUNS.length)];
+    const adjectives = ['Swift', 'Noble', 'Brave', 'Bright', 'Lucky', 'Grand', 'Wise', 'Bold', 'Epic', 'Pure'];
+    const nouns = ['Sheep', 'Wheat', 'Wood', 'Brick', 'Stone', 'Harbor', 'Island', 'Coast', 'Trade', 'Road'];
+
+    const adj = adjectives[Math.floor((numericSeed / 1000) % adjectives.length)];
+    const noun = nouns[Math.floor((numericSeed / 100) % nouns.length)];
     const num = (numericSeed % 1000).toString().padStart(3, '0');
 
     return `${adj}${noun}${num}`;
 }
 
-// Parse friendly seed name back to numeric seed
-function parseFriendlySeed(friendlyName: string): number | null {
-    // Try to match pattern: AdjectiveNoun###
-    const match = friendlyName.match(/^([A-Z][a-z]+)([A-Z][a-z]+)(\d{3})$/);
-    if (!match) return null;
-
-    const [, adj, noun, numStr] = match;
-    const num = parseInt(numStr);
-
-    // Find indices in word lists
-    const adjIndex = ADJECTIVES.indexOf(adj);
-    const nounIndex = NOUNS.indexOf(noun);
-
-    if (adjIndex === -1 || nounIndex === -1) return null;
-
-    // Reconstruct a seed that will generate this friendly name
-    const seed = adjIndex * 1000 + nounIndex * 100 + num;
-    return seed;
+// Hash a string to a consistent numeric seed
+function hashString(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
 }
 
 // Game data
@@ -263,20 +253,9 @@ function shuffleBoard(): void {
     let friendlySeedName: string;
 
     if (seedInput) {
-        // Try to parse as friendly name first
-        const parsedSeed = parseFriendlySeed(seedInput);
-        if (parsedSeed !== null) {
-            seed = parsedSeed;
-            friendlySeedName = seedInput;
-        } else {
-            // Try parsing as numeric seed
-            seed = parseInt(seedInput);
-            if (isNaN(seed)) {
-                // Invalid input - generate random
-                seed = Math.floor(Date.now() + Math.random() * 1000000);
-            }
-            friendlySeedName = generateFriendlySeed(seed);
-        }
+        // Hash the input string to get a consistent seed
+        seed = hashString(seedInput);
+        friendlySeedName = seedInput;
     } else {
         // Generate random seed
         seed = Math.floor(Date.now() + Math.random() * 1000000);
