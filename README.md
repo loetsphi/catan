@@ -6,12 +6,13 @@ A beautiful, mobile-optimized randomizer for Catan 5-6 player expansion boards.
 
 - **🎲 Advanced Board Generation**: Generate balanced, randomized Catan boards using algorithms based on competitive play research
 - **🔢 Seeded Generation**: Use custom seeds to create reproducible board layouts - share seeds with friends to play the same setup
+- **📊 CIBI Score Display**: Real-time Catan Island Balance Index score (0-100) showing board balance quality
+- **🏷️ Human-Friendly Seeds**: Auto-generated memorable seed names like "BraveWheat042" for easy sharing
 - **⚖️ Smart Balance Algorithm**:
   - Prevents adjacent red number tiles (6 and 8)
   - Prevents clustering of high-probability numbers (5, 6, 8, 9)
   - Uses pip values to ensure fair resource distribution
-  - Based on CIBI (Catan Island Balance Index) principles
-- **⚓ Randomized Harbors**: All 8 harbors (3x generic 3:1 and 5x specialty 2:1) are randomly placed each shuffle
+  - Calculates CIBI to measure overall board balance
 - **📱 Mobile-First Design**: Optimized touch interface with smooth animations
 - **🎨 Beautiful UI**: Elegant gradient design with proper resource colors and typography
 - **⚡ No Build Required**: Pure HTML/CSS/JavaScript - works anywhere
@@ -23,9 +24,10 @@ A beautiful, mobile-optimized randomizer for Catan 5-6 player expansion boards.
 ## How to Use
 
 1. Open the generator in your browser
-2. (Optional) Enter a seed number for reproducible layouts
+2. (Optional) Enter a custom seed for reproducible layouts
 3. Tap **Shuffle** to generate a new board
-4. Share the seed with friends to play the same layout
+4. Check the **CIBI Score** to see how balanced your board is (higher is better)
+5. Share the **Seed** with friends to play the same layout
 
 ## Board Details
 
@@ -41,15 +43,6 @@ A beautiful, mobile-optimized randomizer for Catan 5-6 player expansion boards.
 - Red numbers (6, 8): Most common rolls
 - Black numbers (5, 9): Very common
 - Other numbers (2-4, 10-12): Less frequent
-
-### Harbors
-- 3x Generic (3:1) harbors
-- 5x Specialty (2:1) harbors:
-  - Wheat (🌾)
-  - Brick (🧱)
-  - Wood (🌲)
-  - Ore (⛰️)
-  - Sheep (🐑)
 
 ## Balance Algorithm
 
@@ -68,10 +61,13 @@ This generator uses research-based algorithms to create fair, competitive boards
 2. **High-Pip Clustering Prevention**: Prevents 3+ adjacent high-value tiles
 3. **Iterative Optimization**: Tries up to 200 layouts to find balanced placement
 
-### Harbor Randomization
-- All 8 harbor positions are randomized each shuffle
-- Prevents memorization of optimal starting positions
-- Creates unique strategic opportunities every game
+### CIBI (Catan Island Balance Index)
+- Calculates resource distribution balance (0-100 scale)
+- Measures pip value variance across all five resources
+- Higher scores indicate more balanced boards
+- Score of 90+ = Excellent balance
+- Score of 70-89 = Good balance
+- Score below 70 = Consider reshuffling
 
 ## Technical Details
 

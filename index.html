@@ -181,7 +181,7 @@
         .hex.ore .hex-inner { background: linear-gradient(135deg, #5a5f66 0%, #8b9299 100%); }
         .hex.brick .hex-inner { background: linear-gradient(135deg, #b54b2f 0%, #d97555 100%); }
         .hex.desert .hex-inner { background: linear-gradient(135deg, #c19a6b 0%, #d4b896 100%); }
-        .hex.water .hex-inner { 
+        .hex.water .hex-inner {
             background: linear-gradient(135deg, #1a5f7a 0%, #2c8ca8 100%);
             border-color: rgba(26, 95, 122, 0.4);
         }
@@ -233,33 +233,6 @@
             color: #666;
             letter-spacing: 0.3px;
             margin-top: 0px;
-        }
-
-        .harbor-token {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 245, 245, 0.9) 100%);
-            border: 1px solid rgba(0, 0, 0, 0.2);
-            border-radius: 50%;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: 700;
-            color: #2c2c2c;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
-            clip-path: none;
-        }
-
-        .harbor-icon {
-            font-size: 16px;
-            margin-bottom: 2px;
-        }
-
-        .hex.water.harbor .hex-inner {
-            background: linear-gradient(135deg, #e8d5b7 0%, #c9b896 100%);
-            border-color: rgba(139, 115, 85, 0.6);
         }
 
         .legend-mobile {
@@ -324,22 +297,28 @@
         <div class="hint-text">Same seed = same layout</div>
     </div>
 
+    <div class="controls-mobile">
+        <div class="control-title">📊 Board Stats</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px;">
+            <div>
+                <div style="opacity: 0.7;">Seed:</div>
+                <div id="seedDisplay" style="color: #f4e4c1; font-weight: 600;">-</div>
+            </div>
+            <div>
+                <div style="opacity: 0.7;">CIBI Score:</div>
+                <div id="cibiDisplay" style="color: #f4e4c1; font-weight: 600;">-</div>
+            </div>
+        </div>
+    </div>
+
     <div class="board-container">
         <div class="board-wrapper">
             <div class="board">
                 <!-- Water frame top -->
                 <div class="hex water" style="left: 121px; top: 0px;"><div class="hex-inner"></div></div>
-                <div class="hex water" style="left: 169px; top: 0px;">
-                    <div class="hex-inner">
-                        <div class="harbor-token"><div class="harbor-icon">⚓</div>3:1</div>
-                    </div>
-                </div>
+                <div class="hex water" style="left: 169px; top: 0px;"><div class="hex-inner"></div></div>
                 <div class="hex water" style="left: 217px; top: 0px;"><div class="hex-inner"></div></div>
-                <div class="hex water" style="left: 265px; top: 0px;">
-                    <div class="hex-inner">
-                        <div class="harbor-token"><div class="harbor-icon">🌾</div>2:1</div>
-                    </div>
-                </div>
+                <div class="hex water" style="left: 265px; top: 0px;"><div class="hex-inner"></div></div>
 
                 <!-- LAND ROW 1: 3 hexes -->
                 <div class="hex water" style="left: 97px; top: 42px;"><div class="hex-inner"></div></div>
@@ -364,11 +343,7 @@
                 <div class="hex water" style="left: 289px; top: 42px;"><div class="hex-inner"></div></div>
 
                 <!-- LAND ROW 2: 4 hexes -->
-                <div class="hex water" style="left: 73px; top: 84px;">
-                    <div class="hex-inner">
-                        <div class="harbor-token"><div class="harbor-icon">🧱</div>2:1</div>
-                    </div>
-                </div>
+                <div class="hex water" style="left: 73px; top: 84px;"><div class="hex-inner"></div></div>
                 <div class="hex brick" style="left: 121px; top: 84px;">
                     <div class="hex-inner">
                         <div class="resource-label">Brick</div>
@@ -427,11 +402,7 @@
                         <div class="number-token"><div class="number black">10</div><div class="token-letter">L</div><div class="pips">•••</div></div>
                     </div>
                 </div>
-                <div class="hex water" style="left: 337px; top: 126px;">
-                    <div class="hex-inner">
-                        <div class="harbor-token"><div class="harbor-icon">⚓</div>3:1</div>
-                    </div>
-                </div>
+                <div class="hex water" style="left: 337px; top: 126px;"><div class="hex-inner"></div></div>
 
                 <!-- LAND ROW 4: 6 hexes -->
                 <div class="hex water" style="left: 25px; top: 168px;"><div class="hex-inner"></div></div>
@@ -507,18 +478,10 @@
                         <div class="number-token"><div class="number black">5</div><div class="token-letter">V</div><div class="pips">••••</div></div>
                     </div>
                 </div>
-                <div class="hex water" style="left: 337px; top: 210px;">
-                    <div class="hex-inner">
-                        <div class="harbor-token"><div class="harbor-icon">⛰️</div>2:1</div>
-                    </div>
-                </div>
+                <div class="hex water" style="left: 337px; top: 210px;"><div class="hex-inner"></div></div>
 
                 <!-- LAND ROW 6: 4 hexes -->
-                <div class="hex water" style="left: 73px; top: 252px;">
-                    <div class="hex-inner">
-                        <div class="harbor-token"><div class="harbor-icon">🌲</div>2:1</div>
-                    </div>
-                </div>
+                <div class="hex water" style="left: 73px; top: 252px;"><div class="hex-inner"></div></div>
                 <div class="hex ore" style="left: 121px; top: 252px;">
                     <div class="hex-inner">
                         <div class="resource-label">Ore</div>
@@ -571,17 +534,9 @@
 
                 <!-- Water frame bottom -->
                 <div class="hex water" style="left: 121px; top: 336px;"><div class="hex-inner"></div></div>
-                <div class="hex water" style="left: 169px; top: 336px;">
-                    <div class="hex-inner">
-                        <div class="harbor-token"><div class="harbor-icon">🐑</div>2:1</div>
-                    </div>
-                </div>
+                <div class="hex water" style="left: 169px; top: 336px;"><div class="hex-inner"></div></div>
                 <div class="hex water" style="left: 217px; top: 336px;"><div class="hex-inner"></div></div>
-                <div class="hex water" style="left: 265px; top: 336px;">
-                    <div class="hex-inner">
-                        <div class="harbor-token"><div class="harbor-icon">⚓</div>3:1</div>
-                    </div>
-                </div>
+                <div class="hex water" style="left: 265px; top: 336px;"><div class="hex-inner"></div></div>
             </div>
         </div>
     </div>
@@ -641,6 +596,46 @@
             return pipMap[num] || 0;
         }
 
+        // Calculate CIBI (Catan Island Balance Index)
+        function calculateCIBI(shuffledResources, shuffledNumbers, nonDesertIndices) {
+            let totalVariance = 0;
+            const resourcePipTotals = {wood: 0, wheat: 0, sheep: 0, ore: 0, brick: 0};
+
+            // Calculate total pip values for each resource
+            nonDesertIndices.forEach((idx, i) => {
+                const resource = shuffledResources[idx];
+                const number = shuffledNumbers[i];
+                if (number && resource !== 'desert') {
+                    resourcePipTotals[resource] = (resourcePipTotals[resource] || 0) + number.pipValue;
+                }
+            });
+
+            // Calculate variance from ideal (all resources should have similar pip totals)
+            const pipValues = Object.values(resourcePipTotals);
+            const avgPips = pipValues.reduce((a, b) => a + b, 0) / pipValues.length;
+            pipValues.forEach(pips => {
+                totalVariance += Math.pow(pips - avgPips, 2);
+            });
+
+            // Lower variance = better balance. Scale to 0-100 (100 = perfect)
+            const variance = totalVariance / pipValues.length;
+            const score = Math.max(0, Math.min(100, 100 - (variance * 2)));
+
+            return Math.round(score);
+        }
+
+        // Generate human-friendly seed name
+        function generateFriendlySeed(numericSeed) {
+            const adjectives = ['Swift', 'Noble', 'Brave', 'Bright', 'Lucky', 'Grand', 'Wise', 'Bold', 'Epic', 'Pure'];
+            const nouns = ['Sheep', 'Wheat', 'Wood', 'Brick', 'Stone', 'Harbor', 'Island', 'Coast', 'Trade', 'Road'];
+
+            const adj = adjectives[Math.floor((numericSeed / 1000) % adjectives.length)];
+            const noun = nouns[Math.floor((numericSeed / 100) % nouns.length)];
+            const num = (numericSeed % 1000).toString().padStart(3, '0');
+
+            return `${adj}${noun}${num}`;
+        }
+
         // Get all land tile positions (row, col) and mark which are edges
         const landPositions = [
             {pos: [1,0], edge: true}, {pos: [1,1], edge: true}, {pos: [1,2], edge: true},
@@ -650,26 +645,6 @@
             {pos: [5,0], edge: true}, {pos: [5,1], edge: false}, {pos: [5,2], edge: false}, {pos: [5,3], edge: false}, {pos: [5,4], edge: true},
             {pos: [6,0], edge: true}, {pos: [6,1], edge: false}, {pos: [6,2], edge: false}, {pos: [6,3], edge: true},
             {pos: [7,0], edge: true}, {pos: [7,1], edge: true}, {pos: [7,2], edge: true}
-        ];
-
-        // Fixed harbors from 5-6 Extension (always at same positions)
-        const FIXED_HARBORS = {
-            11: {icon: '🐑', ratio: '2:1', type: 'sheep'},   // 3-3 joint position (left side)
-            15: {icon: '⚓', ratio: '3:1', type: 'generic'}  // 5-5 joint position (right side)
-        };
-
-        // Fixed plain water positions from 5-6 Extension
-        const FIXED_WATER = [5, 20];  // 2-2 joint and 6-6 joint positions
-
-        // Base game harbors (randomized among remaining frame positions)
-        const BASE_GAME_HARBORS = [
-            {icon: '🌲', ratio: '2:1', type: 'wood'},
-            {icon: '🧱', ratio: '2:1', type: 'brick'},
-            {icon: '🌾', ratio: '2:1', type: 'wheat'},
-            {icon: '⛰️', ratio: '2:1', type: 'ore'},
-            {icon: '⚓', ratio: '3:1', type: 'generic'},
-            {icon: '⚓', ratio: '3:1', type: 'generic'},
-            {icon: '⚓', ratio: '3:1', type: 'generic'}
         ];
 
         // Resources
@@ -772,7 +747,18 @@
 
         function shuffleBoard() {
             const seedInput = document.getElementById('seedInput').value;
-            const seed = seedInput ? parseInt(seedInput) || seedInput.split('').reduce((a, b) => a + b.charCodeAt(0), 0) : Date.now() + Math.random() * 1000000;
+            let seed;
+            let friendlySeedName;
+
+            if (seedInput) {
+                // User provided a seed
+                seed = parseInt(seedInput) || seedInput.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+                friendlySeedName = seedInput;
+            } else {
+                // Generate random seed
+                seed = Math.floor(Date.now() + Math.random() * 1000000);
+                friendlySeedName = generateFriendlySeed(seed);
+            }
 
             // Shuffle resources
             const edgeIndices = landPositions.map((p, i) => p.edge ? i : -1).filter(i => i >= 0);
@@ -809,32 +795,12 @@
                 attempts++;
             }
 
-            // Harbor placement: Fixed positions + randomized base game harbors
+            // Calculate CIBI score
+            const cibiScore = calculateCIBI(shuffledResources, shuffledNumbers, nonDesertIndices);
 
-            // Start with fixed harbors from 5-6 extension
-            const harborMap = {...FIXED_HARBORS};
-
-            // Get all water positions that can have randomized harbors
-            // Exclude: fixed harbor positions and fixed water positions
-            const fixedPositions = [...Object.keys(FIXED_HARBORS).map(Number), ...FIXED_WATER];
-            const availablePositions = [];
-            for (let i = 0; i < 22; i++) {
-                if (!fixedPositions.includes(i)) {
-                    availablePositions.push(i);
-                }
-            }
-
-            // Shuffle base game harbors
-            const shuffledBaseGameHarbors = shuffleArray([...BASE_GAME_HARBORS], seed + 2000);
-
-            // Shuffle available positions and select 7 for base game harbors
-            const shuffledPositions = shuffleArray([...availablePositions], seed + 3000);
-            const selectedPositions = shuffledPositions.slice(0, 7);
-
-            // Assign shuffled base game harbors to selected positions
-            for (let i = 0; i < selectedPositions.length; i++) {
-                harborMap[selectedPositions[i]] = shuffledBaseGameHarbors[i];
-            }
+            // Update displays
+            document.getElementById('seedDisplay').textContent = friendlySeedName;
+            document.getElementById('cibiDisplay').textContent = cibiScore;
 
             // Update land hexes
             const hexes = document.querySelectorAll('.hex:not(.water)');
@@ -877,25 +843,11 @@
                 }
             });
 
-            // Update water hexes with harbors (fixed + randomized)
+            // Water hexes remain empty (no harbors)
             const waterHexes = document.querySelectorAll('.hex.water');
-            waterHexes.forEach((hex, index) => {
+            waterHexes.forEach((hex) => {
                 const inner = hex.querySelector('.hex-inner');
-
-                // Check if this water hex should have a harbor
-                if (harborMap[index]) {
-                    const harbor = harborMap[index];
-                    hex.classList.add('harbor');  // Add harbor class for styling
-                    inner.innerHTML = `
-                        <div class="harbor-token">
-                            <div class="harbor-icon">${harbor.icon}</div>
-                            <div>${harbor.ratio}</div>
-                        </div>
-                    `;
-                } else {
-                    hex.classList.remove('harbor');  // Remove harbor class if no harbor
-                    inner.innerHTML = '';
-                }
+                inner.innerHTML = ''; // Keep water empty
             });
         }
     </script>
