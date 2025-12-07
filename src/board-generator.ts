@@ -520,7 +520,7 @@ function shuffleBoard(): void {
 
     // Update UI displays
     updateSeedDisplay(friendlySeedName);
-    updateStatsDisplay(cibiResult);
+    updateStatsDisplay(cibiResult, shuffledNumbers);
     updateBoardDisplay(shuffledResources, shuffledNumbers, resourceLabels);
 }
 
@@ -537,9 +537,9 @@ function updateSeedDisplay(seedName: string): void {
 }
 
 /**
- * Update statistics displays (CIBI and resource pips)
+ * Update statistics displays (CIBI, resource pips, and number distribution)
  */
-function updateStatsDisplay(cibiResult: CIBIResult): void {
+function updateStatsDisplay(cibiResult: CIBIResult, shuffledNumbers: NumberToken[]): void {
     const cibiDisplay = document.getElementById('cibiDisplay');
     if (cibiDisplay) cibiDisplay.textContent = cibiResult.score.toString();
 
@@ -554,6 +554,25 @@ function updateStatsDisplay(cibiResult: CIBIResult): void {
     Object.entries(pipDisplays).forEach(([resource, element]) => {
         if (element) {
             element.textContent = cibiResult.pipTotals[resource as keyof ResourcePipTotals].toString();
+        }
+    });
+
+    // Calculate number distribution
+    const numberCounts: Record<number, number> = {
+        2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0
+    };
+
+    shuffledNumbers.forEach(num => {
+        if (num && numberCounts[num.val] !== undefined) {
+            numberCounts[num.val]++;
+        }
+    });
+
+    // Update number count displays
+    Object.entries(numberCounts).forEach(([num, count]) => {
+        const element = document.getElementById(`num${num}Count`);
+        if (element) {
+            element.textContent = count.toString();
         }
     });
 }
