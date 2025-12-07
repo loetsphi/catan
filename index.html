@@ -299,7 +299,7 @@
 
     <div class="controls-mobile">
         <div class="control-title">📊 Board Stats</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; margin-bottom: 15px;">
             <div>
                 <div style="opacity: 0.7;">Seed:</div>
                 <div id="seedDisplay" style="color: #f4e4c1; font-weight: 600;">-</div>
@@ -307,6 +307,31 @@
             <div>
                 <div style="opacity: 0.7;">CIBI Score:</div>
                 <div id="cibiDisplay" style="color: #f4e4c1; font-weight: 600;">-</div>
+            </div>
+        </div>
+        <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 12px;">
+            <div style="opacity: 0.8; font-size: 12px; margin-bottom: 8px; font-family: 'Cinzel', serif;">Resource Distribution (Pip Values)</div>
+            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; font-size: 11px;">
+                <div style="text-align: center;">
+                    <div style="opacity: 0.7;">🌲</div>
+                    <div id="woodPips" style="color: #4a7c2f; font-weight: 700;">-</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="opacity: 0.7;">🌾</div>
+                    <div id="wheatPips" style="color: #f4d88f; font-weight: 700;">-</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="opacity: 0.7;">🐑</div>
+                    <div id="sheepPips" style="color: #b4e6b4; font-weight: 700;">-</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="opacity: 0.7;">⛰️</div>
+                    <div id="orePips" style="color: #8b9299; font-weight: 700;">-</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="opacity: 0.7;">🧱</div>
+                    <div id="brickPips" style="color: #d97555; font-weight: 700;">-</div>
+                </div>
             </div>
         </div>
     </div>
@@ -621,7 +646,10 @@
             const variance = totalVariance / pipValues.length;
             const score = Math.max(0, Math.min(100, 100 - (variance * 2)));
 
-            return Math.round(score);
+            return {
+                score: Math.round(score),
+                pipTotals: resourcePipTotals
+            };
         }
 
         // Generate human-friendly seed name
@@ -795,12 +823,19 @@
                 attempts++;
             }
 
-            // Calculate CIBI score
-            const cibiScore = calculateCIBI(shuffledResources, shuffledNumbers, nonDesertIndices);
+            // Calculate CIBI score and resource pip totals
+            const cibiResult = calculateCIBI(shuffledResources, shuffledNumbers, nonDesertIndices);
 
             // Update displays
             document.getElementById('seedDisplay').textContent = friendlySeedName;
-            document.getElementById('cibiDisplay').textContent = cibiScore;
+            document.getElementById('cibiDisplay').textContent = cibiResult.score;
+
+            // Update resource distribution displays
+            document.getElementById('woodPips').textContent = cibiResult.pipTotals.wood;
+            document.getElementById('wheatPips').textContent = cibiResult.pipTotals.wheat;
+            document.getElementById('sheepPips').textContent = cibiResult.pipTotals.sheep;
+            document.getElementById('orePips').textContent = cibiResult.pipTotals.ore;
+            document.getElementById('brickPips').textContent = cibiResult.pipTotals.brick;
 
             // Update land hexes
             const hexes = document.querySelectorAll('.hex:not(.water)');
