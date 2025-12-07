@@ -112,14 +112,14 @@ function calculateCIBI(
     };
 }
 
-// Generate human-friendly seed name
-function generateFriendlySeed(numericSeed: number): string {
+// Generate a random friendly seed name
+function generateRandomFriendlyName(): string {
     const adjectives = ['Swift', 'Noble', 'Brave', 'Bright', 'Lucky', 'Grand', 'Wise', 'Bold', 'Epic', 'Pure'];
     const nouns = ['Sheep', 'Wheat', 'Wood', 'Brick', 'Stone', 'Harbor', 'Island', 'Coast', 'Trade', 'Road'];
 
-    const adj = adjectives[Math.floor((numericSeed / 1000) % adjectives.length)];
-    const noun = nouns[Math.floor((numericSeed / 100) % nouns.length)];
-    const num = (numericSeed % 1000).toString().padStart(3, '0');
+    const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const noun = nouns[Math.floor(Math.random() * nouns.length)];
+    const num = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
 
     return `${adj}${noun}${num}`;
 }
@@ -249,18 +249,18 @@ function isBalancedPlacement(
 // Main shuffle function
 function shuffleBoard(): void {
     const seedInput = (document.getElementById('seedInput') as HTMLInputElement).value;
-    let seed: number;
     let friendlySeedName: string;
 
     if (seedInput) {
-        // Hash the input string to get a consistent seed
-        seed = hashString(seedInput);
+        // User provided a seed name - use it
         friendlySeedName = seedInput;
     } else {
-        // Generate random seed
-        seed = Math.floor(Date.now() + Math.random() * 1000000);
-        friendlySeedName = generateFriendlySeed(seed);
+        // Generate a random friendly name
+        friendlySeedName = generateRandomFriendlyName();
     }
+
+    // Hash the friendly name to get the numeric seed
+    const seed = hashString(friendlySeedName);
 
     // Shuffle resources
     const edgeIndices = landPositions.map((p, i) => p.edge ? i : -1).filter(i => i >= 0);
