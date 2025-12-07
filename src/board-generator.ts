@@ -42,6 +42,8 @@ interface GameConfig {
 // Constants
 // ============================================================================
 
+const VERSION = '1.0.0';
+
 const BALANCE_ATTEMPTS = 200;
 const HIGH_PIP_THRESHOLD = 4;
 const MAX_ADJACENT_HIGH_PIPS = 2;
@@ -651,4 +653,10 @@ function updateBoardDisplay(
 // Initialize board visibility on page load
 document.addEventListener('DOMContentLoaded', () => {
     updateBoardVisibility();
+
+    // Display version
+    const versionElement = document.getElementById('version');
+    if (versionElement) {
+        versionElement.textContent = `v${VERSION}`;
+    }
 });
