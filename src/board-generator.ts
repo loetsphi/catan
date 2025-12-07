@@ -3,6 +3,7 @@
 // ============================================================================
 
 type Resource = 'wood' | 'wheat' | 'sheep' | 'ore' | 'brick' | 'desert';
+type GameMode = '4-player' | '5-6-player';
 
 interface NumberToken {
     val: number;
@@ -28,6 +29,13 @@ interface ResourcePipTotals {
 interface CIBIResult {
     score: number;
     pipTotals: ResourcePipTotals;
+}
+
+interface GameConfig {
+    positions: Position[];
+    resources: Resource[];
+    numbers: NumberToken[];
+    desertCount: number;
 }
 
 // ============================================================================
@@ -200,12 +208,14 @@ function calculateCIBI(
  * @param shuffledNumbers - Array of number tokens
  * @param shuffledResources - Array of resources (unused but kept for future)
  * @param nonDesertIndices - Indices of non-desert tiles
+ * @param positions - Board positions for adjacency checking
  * @returns True if placement is balanced
  */
 function isBalancedPlacement(
     shuffledNumbers: NumberToken[],
     _shuffledResources: (Resource | undefined)[],
-    nonDesertIndices: number[]
+    nonDesertIndices: number[],
+    positions: Position[]
 ): boolean {
     // Rule 1: No adjacent red numbers (6, 8)
     for (let i = 0; i < nonDesertIndices.length; i++) {
@@ -220,7 +230,7 @@ function isBalancedPlacement(
 
             if (!num2) continue;
 
-            if (num2.red && areAdjacent(landPositions[idx1], landPositions[idx2])) {
+            if (num2.red && areAdjacent(positions[idx1], positions[idx2])) {
                 return false;
             }
         }
@@ -239,7 +249,7 @@ function isBalancedPlacement(
             const idx2 = nonDesertIndices[j];
             const num2 = shuffledNumbers[j];
 
-            if (num2 && num2.pipValue >= HIGH_PIP_THRESHOLD && areAdjacent(landPositions[idx1], landPositions[idx2])) {
+            if (num2 && num2.pipValue >= HIGH_PIP_THRESHOLD && areAdjacent(positions[idx1], positions[idx2])) {
                 highPipNeighbors++;
             }
         }
@@ -256,55 +266,97 @@ function isBalancedPlacement(
 // Game Data
 // ============================================================================
 
-const landPositions: Position[] = [
-    {pos: [1, 0], edge: true}, {pos: [1, 1], edge: true}, {pos: [1, 2], edge: true},
-    {pos: [2, 0], edge: true}, {pos: [2, 1], edge: false}, {pos: [2, 2], edge: false}, {pos: [2, 3], edge: true},
-    {pos: [3, 0], edge: true}, {pos: [3, 1], edge: false}, {pos: [3, 2], edge: false}, {pos: [3, 3], edge: false}, {pos: [3, 4], edge: true},
-    {pos: [4, 0], edge: true}, {pos: [4, 1], edge: false}, {pos: [4, 2], edge: false}, {pos: [4, 3], edge: false}, {pos: [4, 4], edge: false}, {pos: [4, 5], edge: true},
-    {pos: [5, 0], edge: true}, {pos: [5, 1], edge: false}, {pos: [5, 2], edge: false}, {pos: [5, 3], edge: false}, {pos: [5, 4], edge: true},
-    {pos: [6, 0], edge: true}, {pos: [6, 1], edge: false}, {pos: [6, 2], edge: false}, {pos: [6, 3], edge: true},
-    {pos: [7, 0], edge: true}, {pos: [7, 1], edge: true}, {pos: [7, 2], edge: true}
-];
+// 4-Player Board Configuration (3-4-5-4-3 layout)
+const fourPlayerConfig: GameConfig = {
+    positions: [
+        {pos: [0, 0], edge: true}, {pos: [0, 1], edge: true}, {pos: [0, 2], edge: true},
+        {pos: [1, 0], edge: true}, {pos: [1, 1], edge: false}, {pos: [1, 2], edge: false}, {pos: [1, 3], edge: true},
+        {pos: [2, 0], edge: true}, {pos: [2, 1], edge: false}, {pos: [2, 2], edge: false}, {pos: [2, 3], edge: false}, {pos: [2, 4], edge: true},
+        {pos: [3, 0], edge: true}, {pos: [3, 1], edge: false}, {pos: [3, 2], edge: false}, {pos: [3, 3], edge: true},
+        {pos: [4, 0], edge: true}, {pos: [4, 1], edge: true}, {pos: [4, 2], edge: true}
+    ],
+    resources: [
+        'wood', 'wood', 'wood', 'wood',
+        'wheat', 'wheat', 'wheat', 'wheat',
+        'sheep', 'sheep', 'sheep', 'sheep',
+        'ore', 'ore', 'ore',
+        'brick', 'brick', 'brick',
+        'desert'
+    ],
+    numbers: [
+        {val: 2, letter: 'A', pips: '•', red: false, pipValue: 1},
+        {val: 3, letter: 'B', pips: '••', red: false, pipValue: 2},
+        {val: 3, letter: 'C', pips: '••', red: false, pipValue: 2},
+        {val: 4, letter: 'D', pips: '•••', red: false, pipValue: 3},
+        {val: 4, letter: 'E', pips: '•••', red: false, pipValue: 3},
+        {val: 5, letter: 'F', pips: '••••', red: false, pipValue: 4},
+        {val: 5, letter: 'G', pips: '••••', red: false, pipValue: 4},
+        {val: 6, letter: 'H', pips: '•••••', red: true, pipValue: 5},
+        {val: 6, letter: 'I', pips: '•••••', red: true, pipValue: 5},
+        {val: 8, letter: 'J', pips: '•••••', red: true, pipValue: 5},
+        {val: 8, letter: 'K', pips: '•••••', red: true, pipValue: 5},
+        {val: 9, letter: 'L', pips: '••••', red: false, pipValue: 4},
+        {val: 9, letter: 'M', pips: '••••', red: false, pipValue: 4},
+        {val: 10, letter: 'N', pips: '•••', red: false, pipValue: 3},
+        {val: 10, letter: 'O', pips: '•••', red: false, pipValue: 3},
+        {val: 11, letter: 'P', pips: '••', red: false, pipValue: 2},
+        {val: 11, letter: 'Q', pips: '••', red: false, pipValue: 2},
+        {val: 12, letter: 'R', pips: '•', red: false, pipValue: 1}
+    ],
+    desertCount: 1
+};
 
-const resources: Resource[] = [
-    'wood', 'wood', 'wood', 'wood', 'wood', 'wood',
-    'wheat', 'wheat', 'wheat', 'wheat', 'wheat', 'wheat',
-    'sheep', 'sheep', 'sheep', 'sheep', 'sheep', 'sheep',
-    'ore', 'ore', 'ore', 'ore', 'ore',
-    'brick', 'brick', 'brick', 'brick', 'brick',
-    'desert', 'desert'
-];
-
-const numbers: NumberToken[] = [
-    {val: 2, letter: 'A', pips: '•', red: false, pipValue: 1},
-    {val: 3, letter: 'B', pips: '••', red: false, pipValue: 2},
-    {val: 3, letter: 'C', pips: '••', red: false, pipValue: 2},
-    {val: 4, letter: 'D', pips: '•••', red: false, pipValue: 3},
-    {val: 4, letter: 'E', pips: '•••', red: false, pipValue: 3},
-    {val: 5, letter: 'F', pips: '••••', red: false, pipValue: 4},
-    {val: 5, letter: 'G', pips: '••••', red: false, pipValue: 4},
-    {val: 6, letter: 'H', pips: '•••••', red: true, pipValue: 5},
-    {val: 6, letter: 'I', pips: '•••••', red: true, pipValue: 5},
-    {val: 8, letter: 'J', pips: '•••••', red: true, pipValue: 5},
-    {val: 8, letter: 'K', pips: '•••••', red: true, pipValue: 5},
-    {val: 9, letter: 'L', pips: '••••', red: false, pipValue: 4},
-    {val: 9, letter: 'M', pips: '••••', red: false, pipValue: 4},
-    {val: 10, letter: 'N', pips: '•••', red: false, pipValue: 3},
-    {val: 10, letter: 'O', pips: '•••', red: false, pipValue: 3},
-    {val: 11, letter: 'P', pips: '••', red: false, pipValue: 2},
-    {val: 11, letter: 'Q', pips: '••', red: false, pipValue: 2},
-    {val: 12, letter: 'R', pips: '•', red: false, pipValue: 1},
-    {val: 2, letter: 'S', pips: '•', red: false, pipValue: 1},
-    {val: 3, letter: 'T', pips: '••', red: false, pipValue: 2},
-    {val: 4, letter: 'U', pips: '•••', red: false, pipValue: 3},
-    {val: 5, letter: 'V', pips: '••••', red: false, pipValue: 4},
-    {val: 6, letter: 'W', pips: '•••••', red: true, pipValue: 5},
-    {val: 8, letter: 'X', pips: '•••••', red: true, pipValue: 5},
-    {val: 9, letter: 'Y', pips: '••••', red: false, pipValue: 4},
-    {val: 10, letter: 'Za', pips: '•••', red: false, pipValue: 3},
-    {val: 11, letter: 'Zb', pips: '••', red: false, pipValue: 2},
-    {val: 12, letter: 'Zc', pips: '•', red: false, pipValue: 1}
-];
+// 5-6 Player Board Configuration
+const fiveSixPlayerConfig: GameConfig = {
+    positions: [
+        {pos: [1, 0], edge: true}, {pos: [1, 1], edge: true}, {pos: [1, 2], edge: true},
+        {pos: [2, 0], edge: true}, {pos: [2, 1], edge: false}, {pos: [2, 2], edge: false}, {pos: [2, 3], edge: true},
+        {pos: [3, 0], edge: true}, {pos: [3, 1], edge: false}, {pos: [3, 2], edge: false}, {pos: [3, 3], edge: false}, {pos: [3, 4], edge: true},
+        {pos: [4, 0], edge: true}, {pos: [4, 1], edge: false}, {pos: [4, 2], edge: false}, {pos: [4, 3], edge: false}, {pos: [4, 4], edge: false}, {pos: [4, 5], edge: true},
+        {pos: [5, 0], edge: true}, {pos: [5, 1], edge: false}, {pos: [5, 2], edge: false}, {pos: [5, 3], edge: false}, {pos: [5, 4], edge: true},
+        {pos: [6, 0], edge: true}, {pos: [6, 1], edge: false}, {pos: [6, 2], edge: false}, {pos: [6, 3], edge: true},
+        {pos: [7, 0], edge: true}, {pos: [7, 1], edge: true}, {pos: [7, 2], edge: true}
+    ],
+    resources: [
+        'wood', 'wood', 'wood', 'wood', 'wood', 'wood',
+        'wheat', 'wheat', 'wheat', 'wheat', 'wheat', 'wheat',
+        'sheep', 'sheep', 'sheep', 'sheep', 'sheep', 'sheep',
+        'ore', 'ore', 'ore', 'ore', 'ore',
+        'brick', 'brick', 'brick', 'brick', 'brick',
+        'desert', 'desert'
+    ],
+    numbers: [
+        {val: 2, letter: 'A', pips: '•', red: false, pipValue: 1},
+        {val: 3, letter: 'B', pips: '••', red: false, pipValue: 2},
+        {val: 3, letter: 'C', pips: '••', red: false, pipValue: 2},
+        {val: 4, letter: 'D', pips: '•••', red: false, pipValue: 3},
+        {val: 4, letter: 'E', pips: '•••', red: false, pipValue: 3},
+        {val: 5, letter: 'F', pips: '••••', red: false, pipValue: 4},
+        {val: 5, letter: 'G', pips: '••••', red: false, pipValue: 4},
+        {val: 6, letter: 'H', pips: '•••••', red: true, pipValue: 5},
+        {val: 6, letter: 'I', pips: '•••••', red: true, pipValue: 5},
+        {val: 8, letter: 'J', pips: '•••••', red: true, pipValue: 5},
+        {val: 8, letter: 'K', pips: '•••••', red: true, pipValue: 5},
+        {val: 9, letter: 'L', pips: '••••', red: false, pipValue: 4},
+        {val: 9, letter: 'M', pips: '••••', red: false, pipValue: 4},
+        {val: 10, letter: 'N', pips: '•••', red: false, pipValue: 3},
+        {val: 10, letter: 'O', pips: '•••', red: false, pipValue: 3},
+        {val: 11, letter: 'P', pips: '••', red: false, pipValue: 2},
+        {val: 11, letter: 'Q', pips: '••', red: false, pipValue: 2},
+        {val: 12, letter: 'R', pips: '•', red: false, pipValue: 1},
+        {val: 2, letter: 'S', pips: '•', red: false, pipValue: 1},
+        {val: 3, letter: 'T', pips: '••', red: false, pipValue: 2},
+        {val: 4, letter: 'U', pips: '•••', red: false, pipValue: 3},
+        {val: 5, letter: 'V', pips: '••••', red: false, pipValue: 4},
+        {val: 6, letter: 'W', pips: '•••••', red: true, pipValue: 5},
+        {val: 8, letter: 'X', pips: '•••••', red: true, pipValue: 5},
+        {val: 9, letter: 'Y', pips: '••••', red: false, pipValue: 4},
+        {val: 10, letter: 'Za', pips: '•••', red: false, pipValue: 3},
+        {val: 11, letter: 'Zb', pips: '••', red: false, pipValue: 2},
+        {val: 12, letter: 'Zc', pips: '•', red: false, pipValue: 1}
+    ],
+    desertCount: 2
+};
 
 const resourceLabels: Record<Resource, string> = {
     wood: 'Wood',
@@ -314,6 +366,39 @@ const resourceLabels: Record<Resource, string> = {
     brick: 'Brick',
     desert: 'Desert'
 };
+
+// Current game mode
+let currentGameMode: GameMode = '5-6-player';
+
+/**
+ * Get the configuration for the current game mode
+ */
+function getCurrentConfig(): GameConfig {
+    return currentGameMode === '4-player' ? fourPlayerConfig : fiveSixPlayerConfig;
+}
+
+/**
+ * Switch between game modes
+ */
+function setGameMode(mode: GameMode): void {
+    currentGameMode = mode;
+
+    // Update UI mode indicator buttons
+    const modeButtons = document.querySelectorAll('.mode-btn');
+    modeButtons.forEach(btn => {
+        if (btn.getAttribute('data-mode') === mode) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    // Update subtitle
+    const subtitle = document.getElementById('modeSubtitle');
+    if (subtitle) {
+        subtitle.textContent = mode === '4-player' ? '4 Player • Mobile' : '5-6 Player • Mobile';
+    }
+}
 
 // ============================================================================
 // Main Board Generation
@@ -335,22 +420,32 @@ function shuffleBoard(): void {
     }
 
     // Hash friendly name to numeric seed for reproducibility
-    const seed = hashString(friendlySeedName);
+    let seed = hashString(friendlySeedName);
+
+    // Get current game configuration
+    const config = getCurrentConfig();
+    const landPositions = config.positions;
+    const resources = config.resources;
+    const numbers = config.numbers;
+    const desertCount = config.desertCount;
+    const tileCount = landPositions.length;
 
     // Shuffle resources - place deserts on edge tiles
     const edgeIndices = landPositions.map((p, i) => p.edge ? i : -1).filter(i => i >= 0);
-    const shuffledResources: (Resource | undefined)[] = new Array(30);
+    const shuffledResources: (Resource | undefined)[] = new Array(tileCount);
     const nonDesertResources = resources.filter(r => r !== 'desert');
 
     const shuffledEdges = shuffleArray(edgeIndices, seed);
-    const desertPos1 = shuffledEdges[0];
-    const desertPos2 = shuffledEdges[1];
-    shuffledResources[desertPos1] = 'desert';
-    shuffledResources[desertPos2] = 'desert';
+    const desertPositions: number[] = [];
+    for (let i = 0; i < desertCount; i++) {
+        const desertPos = shuffledEdges[i];
+        shuffledResources[desertPos] = 'desert';
+        desertPositions.push(desertPos);
+    }
 
     const remainingIndices: number[] = [];
-    for (let i = 0; i < 30; i++) {
-        if (i !== desertPos1 && i !== desertPos2) {
+    for (let i = 0; i < tileCount; i++) {
+        if (!desertPositions.includes(i)) {
             remainingIndices.push(i);
         }
     }
@@ -361,13 +456,20 @@ function shuffleBoard(): void {
     });
 
     // Shuffle numbers with balance validation
+    // Keep trying until we find a valid placement that follows all rules
     let shuffledNumbers = shuffleArray(numbers, seed + 1000);
     const nonDesertIndices = shuffledResources.map((r, i) => r !== 'desert' ? i : -1).filter(i => i >= 0);
 
     let attempts = 0;
-    while (attempts < BALANCE_ATTEMPTS && !isBalancedPlacement(shuffledNumbers, shuffledResources, nonDesertIndices)) {
-        shuffledNumbers = shuffleArray(numbers, seed + 1000 + attempts);
+    while (!isBalancedPlacement(shuffledNumbers, shuffledResources, nonDesertIndices, landPositions)) {
         attempts++;
+        shuffledNumbers = shuffleArray(numbers, seed + 1000 + attempts);
+
+        // Safety check: if we've tried too many times, modify the seed
+        if (attempts > 1000) {
+            attempts = 0;
+            seed = seed + 100000; // Jump to a different seed space
+        }
     }
 
     // Calculate balance metrics
@@ -465,5 +567,6 @@ function updateBoardDisplay(
     });
 }
 
-// Make shuffleBoard available globally
+// Make functions available globally
 (window as any).shuffleBoard = shuffleBoard;
+(window as any).setGameMode = setGameMode;

@@ -280,12 +280,51 @@
         .hex {
             animation: hexAppear 0.4s ease-out backwards;
         }
+
+        .mode-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.6);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cinzel', serif;
+        }
+
+        .mode-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #4a6d8c 0%, #6b8caf 100%);
+            border-color: #8badcc;
+            color: #f4e4c1;
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="title">CATAN</div>
-        <div class="subtitle">5-6 Player • Mobile</div>
+        <div class="subtitle" id="modeSubtitle">5-6 Player • Mobile</div>
+    </div>
+
+    <div class="controls-mobile">
+        <div class="control-title">🎮 Game Mode</div>
+        <div class="mode-selector">
+            <button class="mode-btn" data-mode="4-player" onclick="setGameMode('4-player'); shuffleBoard();">4 Players</button>
+            <button class="mode-btn active" data-mode="5-6-player" onclick="setGameMode('5-6-player'); shuffleBoard();">5-6 Players</button>
+        </div>
     </div>
 
     <div class="controls-mobile">
