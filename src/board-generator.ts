@@ -566,12 +566,25 @@ function updateBoardDisplay(
     shuffledNumbers: NumberToken[],
     labels: Record<Resource, string>
 ): void {
-    const hexes = document.querySelectorAll<HTMLElement>('.hex:not(.water)');
+    const hexes = document.querySelectorAll<HTMLElement>('.hex');
     let numberIndex = 0;
+    let resourceIndex = 0;
+
+    // Get visible indices for current mode
+    const visibleIndices = currentGameMode === '4-player'
+        ? new Set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 19, 20, 21])
+        : new Set(Array.from({length: 30}, (_, i) => i));
 
     hexes.forEach((hex, index) => {
-        const resource = shuffledResources[index];
+        // Skip hidden tiles in 4-player mode
+        if (!visibleIndices.has(index)) {
+            return;
+        }
+
+        const resource = shuffledResources[resourceIndex];
         if (!resource) return;
+
+        resourceIndex++;
 
         hex.className = 'hex ' + resource;
         const inner = hex.querySelector<HTMLElement>('.hex-inner');
