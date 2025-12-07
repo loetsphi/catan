@@ -124,6 +124,17 @@ function generateFriendlySeed(numericSeed: number): string {
     return `${adj}${noun}${num}`;
 }
 
+// Hash a string to a consistent numeric seed
+function hashString(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
+}
+
 // Game data
 const landPositions: LandPosition[] = [
     {pos: [1, 0], edge: true}, {pos: [1, 1], edge: true}, {pos: [1, 2], edge: true},
@@ -242,8 +253,8 @@ function shuffleBoard(): void {
     let friendlySeedName: string;
 
     if (seedInput) {
-        // User provided a seed
-        seed = parseInt(seedInput) || seedInput.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+        // Hash the input string to get a consistent seed
+        seed = hashString(seedInput);
         friendlySeedName = seedInput;
     } else {
         // Generate random seed
