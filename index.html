@@ -624,16 +624,21 @@
 
     <div class="controls-mobile">
         <div class="control-title">📊 Board Stats</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; margin-bottom: 15px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; font-size: 13px; margin-bottom: 15px;">
             <div>
                 <div style="opacity: 0.7;">Seed:</div>
                 <div id="seedDisplay" style="color: #f4e4c1; font-weight: 600;">-</div>
             </div>
             <div>
-                <div style="opacity: 0.7;" data-tooltip="Catan Island Balance Index: Lower scores = more balanced resource distribution">CIBI Score:</div>
+                <div style="opacity: 0.7;" data-tooltip="Catan Island Balance Index: Lower scores = more balanced resource distribution">CIBI:</div>
                 <div id="cibiDisplay" style="color: #f4e4c1; font-weight: 600;">-</div>
             </div>
+            <div>
+                <div style="opacity: 0.7;" data-tooltip="Fairness Score: 100 = perfectly fair, lower = unbalanced">Fair:</div>
+                <div id="fairnessDisplay" style="color: #f4e4c1; font-weight: 600;">-</div>
+            </div>
         </div>
+        <button onclick="toggleSettlementSuggestions()" id="settlementBtn" style="width: 100%; padding: 10px; background: linear-gradient(135deg, rgba(74, 109, 140, 0.3) 0%, rgba(107, 140, 175, 0.3) 100%); border: 2px solid rgba(74, 109, 140, 0.5); border-radius: 8px; color: #f4e4c1; font-size: 14px; font-weight: 600; font-family: 'Cinzel', serif; cursor: pointer; margin-bottom: 15px;">🏘️ Show Best Spots</button>
         <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 12px;">
             <div style="opacity: 0.8; font-size: 12px; margin-bottom: 8px; font-family: 'Cinzel', serif;" data-tooltip="Total pip value for each resource (higher = more production)">Resource Distribution (Pip Values)</div>
             <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; font-size: 11px;">

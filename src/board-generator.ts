@@ -518,9 +518,18 @@ function shuffleBoard(): void {
     // Calculate balance metrics
     const cibiResult = calculateCIBI(shuffledResources, shuffledNumbers, nonDesertIndices);
 
+    // Calculate settlement suggestions and fairness
+    const settlements = calculateBestSettlements(shuffledResources, shuffledNumbers);
+    const fairnessScore = calculateFairnessScore(settlements);
+
+    // Store current board data for settlement suggestions
+    currentSettlements = settlements;
+    currentShuffledResources = shuffledResources;
+    currentShuffledNumbers = shuffledNumbers;
+
     // Update UI displays
     updateSeedDisplay(friendlySeedName);
-    updateStatsDisplay(cibiResult);
+    updateStatsDisplay(cibiResult, fairnessScore);
     updateBoardDisplay(shuffledResources, shuffledNumbers, resourceLabels);
 }
 
@@ -537,11 +546,14 @@ function updateSeedDisplay(seedName: string): void {
 }
 
 /**
- * Update statistics displays (CIBI and resource pips)
+ * Update statistics displays (CIBI, fairness, and resource pips)
  */
-function updateStatsDisplay(cibiResult: CIBIResult): void {
+function updateStatsDisplay(cibiResult: CIBIResult, fairnessScore: number): void {
     const cibiDisplay = document.getElementById('cibiDisplay');
     if (cibiDisplay) cibiDisplay.textContent = cibiResult.score.toString();
+
+    const fairnessDisplay = document.getElementById('fairnessDisplay');
+    if (fairnessDisplay) fairnessDisplay.textContent = fairnessScore.toString();
 
     const pipDisplays = {
         wood: document.getElementById('woodPips'),
@@ -631,6 +643,198 @@ function updateBoardDisplay(
             hexes.forEach(hex => hex.classList.remove('shuffling'));
         }, 600);
     }, 300); // Start updating content halfway through animation
+}
+
+// ============================================================================
+// Settlement Suggestion Functions
+// ============================================================================
+
+interface SettlementPosition {
+    hexIndices: number[];
+    score: number;
+    diversity: number;
+}
+
+/**
+ * Calculate fairness score based on settlement position variance
+ * Higher score = more fair (all players have similar opportunities)
+ * @param settlements - Array of settlement positions with scores
+ * @returns Fairness score from 0-100 (100 = perfectly fair)
+ */
+function calculateFairnessScore(settlements: SettlementPosition[]): number {
+    if (settlements.length < 2) return 100;
+
+    // Get scores of top 20 settlements (approximate available starting positions)
+    const topScores = settlements.slice(0, 20).map(s => s.score);
+
+    // Calculate mean
+    const mean = topScores.reduce((a, b) => a + b, 0) / topScores.length;
+
+    // Calculate variance
+    const variance = topScores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / topScores.length;
+
+    // Calculate standard deviation
+    const stdDev = Math.sqrt(variance);
+
+    // Convert to fairness score (lower variance = more fair)
+    // Scale: stdDev of 0 = 100, stdDev of 5+ = 0
+    const fairness = Math.max(0, Math.min(100, 100 - (stdDev * 20)));
+
+    return Math.round(fairness);
+}
+
+/**
+ * Calculate best settlement positions based on adjacent hexes
+ */
+function calculateBestSettlements(
+    shuffledResources: (Resource | undefined)[],
+    shuffledNumbers: NumberToken[]
+): SettlementPosition[] {
+    const settlements: SettlementPosition[] = [];
+    const config = getCurrentConfig();
+    const positions = config.positions;
+
+    // For each hex, calculate scores for its 6 vertices (intersections)
+    // Each vertex is shared by 3 hexes (or fewer at edges)
+    const vertexMap = new Map<string, number[]>();
+
+    positions.forEach((pos, index) => {
+        const [row, col] = pos.pos;
+
+        // Calculate the 6 vertices around this hex
+        const vertices = [
+            `${row},${col},TL`, `${row},${col},TR`,
+            `${row},${col},R`,
+            `${row},${col},BR`, `${row},${col},BL`,
+            `${row},${col},L`
+        ];
+
+        vertices.forEach(vertex => {
+            if (!vertexMap.has(vertex)) {
+                vertexMap.set(vertex, []);
+            }
+            vertexMap.get(vertex)!.push(index);
+        });
+    });
+
+    // Calculate score for each vertex
+    vertexMap.forEach((hexIndices) => {
+        let totalScore = 0;
+        const resources = new Set<Resource>();
+        let numberIndex = 0;
+
+        hexIndices.forEach(idx => {
+            const resource = shuffledResources[idx];
+            if (!resource || resource === 'desert') return;
+
+            resources.add(resource);
+
+            // Find the number for this hex
+            let currentNumberIndex = 0;
+            for (let i = 0; i <= idx; i++) {
+                if (shuffledResources[i] && shuffledResources[i] !== 'desert') {
+                    if (i === idx) {
+                        numberIndex = currentNumberIndex;
+                        break;
+                    }
+                    currentNumberIndex++;
+                }
+            }
+
+            const number = shuffledNumbers[numberIndex];
+            if (number) {
+                totalScore += number.pipValue;
+            }
+        });
+
+        // Diversity bonus (having 3 different resources is better)
+        const diversity = resources.size;
+
+        settlements.push({
+            hexIndices,
+            score: totalScore,
+            diversity
+        });
+    });
+
+    // Sort by score (with diversity as tiebreaker)
+    settlements.sort((a, b) => {
+        if (b.score === a.score) {
+            return b.diversity - a.diversity;
+        }
+        return b.score - a.score;
+    });
+
+    return settlements.slice(0, 10); // Return top 10
+}
+
+// Store current settlements for toggling
+let currentSettlements: SettlementPosition[] = [];
+let currentShuffledResources: (Resource | undefined)[] = [];
+let currentShuffledNumbers: NumberToken[] = [];
+
+/**
+ * Show/hide settlement suggestions on the board
+ */
+function toggleSettlementSuggestions(): void {
+    const button = document.getElementById('settlementBtn');
+    const existing = document.querySelectorAll('.settlement-marker');
+    const hexes = document.querySelectorAll<HTMLElement>('.hex');
+
+    if (existing.length > 0) {
+        // Remove existing markers and glow effects
+        existing.forEach(marker => marker.remove());
+        hexes.forEach(hex => {
+            hex.style.filter = '';
+        });
+        if (button) button.textContent = '🏘️ Show Best Spots';
+        return;
+    }
+
+    // Check if we have current board data
+    if (currentSettlements.length === 0 || currentShuffledResources.length === 0) {
+        alert('Please generate a board first!');
+        return;
+    }
+
+    if (button) button.textContent = '🏘️ Hide Spots';
+
+    // Show top 5 settlements with markers
+    const topSettlements = currentSettlements.slice(0, 5);
+
+    topSettlements.forEach((settlement, rank) => {
+        settlement.hexIndices.forEach(hexIndex => {
+            const hex = hexes[hexIndex];
+            if (!hex || hex.style.display === 'none') return;
+
+            // Create marker element
+            const marker = document.createElement('div');
+            marker.className = 'settlement-marker';
+            marker.style.cssText = `
+                position: absolute;
+                top: 2px;
+                right: 2px;
+                width: 16px;
+                height: 16px;
+                background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 9px;
+                font-weight: 700;
+                color: #2c2c2c;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+                z-index: 10;
+                border: 1px solid rgba(255, 255, 255, 0.3);
+            `;
+            marker.textContent = (rank + 1).toString();
+            hex.appendChild(marker);
+
+            // Add glow effect to hex
+            hex.style.filter = 'brightness(1.1) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6))';
+        });
+    });
 }
 
 // ============================================================================
@@ -780,6 +984,7 @@ function deleteFavorite(index: number): void {
 (window as any).toggleFavoritesList = toggleFavoritesList;
 (window as any).loadFavorite = loadFavorite;
 (window as any).deleteFavorite = deleteFavorite;
+(window as any).toggleSettlementSuggestions = toggleSettlementSuggestions;
 
 // Initialize board visibility on page load
 document.addEventListener('DOMContentLoaded', () => {
