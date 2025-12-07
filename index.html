@@ -646,9 +646,6 @@
             {pos: [7,0], edge: true}, {pos: [7,1], edge: true}, {pos: [7,2], edge: true}
         ];
 
-        // Harbor positions (water tile indices that can have harbors)
-        const harborPositions = [1, 3, 5, 11, 15, 20, 22, 26];
-
         // Harbor types
         const harbors = [
             {icon: '⚓', ratio: '3:1', type: 'generic'},
@@ -798,14 +795,20 @@
                 attempts++;
             }
 
-            // Shuffle harbors and their positions
+            // Shuffle harbors
             const shuffledHarbors = shuffleArray([...harbors], seed + 2000);
-            const shuffledHarborPositions = shuffleArray([...harborPositions], seed + 3000);
+
+            // Create an array of all possible water tile positions (0-21, there are 22 water tiles)
+            const allWaterPositions = Array.from({length: 22}, (_, i) => i);
+
+            // Randomly select 8 positions for harbors
+            const shuffledAllPositions = shuffleArray([...allWaterPositions], seed + 3000);
+            const selectedHarborPositions = shuffledAllPositions.slice(0, 8);
 
             // Create a mapping of water hex position to harbor
             const harborMap = {};
-            for (let i = 0; i < shuffledHarborPositions.length; i++) {
-                harborMap[shuffledHarborPositions[i]] = shuffledHarbors[i];
+            for (let i = 0; i < selectedHarborPositions.length; i++) {
+                harborMap[selectedHarborPositions[i]] = shuffledHarbors[i];
             }
 
             // Update land hexes
