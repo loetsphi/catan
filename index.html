@@ -761,7 +761,7 @@
 
         function shuffleBoard() {
             const seedInput = document.getElementById('seedInput').value;
-            const seed = seedInput ? parseInt(seedInput) || seedInput.split('').reduce((a, b) => a + b.charCodeAt(0), 0) : Date.now();
+            const seed = seedInput ? parseInt(seedInput) || seedInput.split('').reduce((a, b) => a + b.charCodeAt(0), 0) : Date.now() + Math.random() * 1000000;
 
             // Shuffle resources
             const edgeIndices = landPositions.map((p, i) => p.edge ? i : -1).filter(i => i >= 0);
