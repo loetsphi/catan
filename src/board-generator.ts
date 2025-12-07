@@ -575,7 +575,19 @@ function updateBoardDisplay(
         ? new Set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 19, 20, 21])
         : new Set(Array.from({length: 30}, (_, i) => i));
 
+    // Add shuffling animation to visible tiles
     hexes.forEach((hex, index) => {
+        if (visibleIndices.has(index)) {
+            hex.classList.add('shuffling');
+        }
+    });
+
+    // Update content after brief delay to sync with animation
+    setTimeout(() => {
+        numberIndex = 0;
+        resourceIndex = 0;
+
+        hexes.forEach((hex, index) => {
         // Skip hidden tiles in 4-player mode
         if (!visibleIndices.has(index)) {
             return;
@@ -612,12 +624,162 @@ function updateBoardDisplay(
                 `;
             }
         }
-    });
+        });
+
+        // Remove shuffling class after animation completes
+        setTimeout(() => {
+            hexes.forEach(hex => hex.classList.remove('shuffling'));
+        }, 600);
+    }, 300); // Start updating content halfway through animation
+}
+
+// ============================================================================
+// Favorite Boards Functions
+// ============================================================================
+
+interface FavoriteBoard {
+    seed: string;
+    mode: GameMode;
+    cibi: number;
+    timestamp: number;
+}
+
+/**
+ * Save current board to favorites
+ */
+function saveFavorite(): void {
+    const seedDisplay = document.getElementById('seedDisplay');
+    const cibiDisplay = document.getElementById('cibiDisplay');
+
+    if (!seedDisplay || !cibiDisplay) return;
+
+    const seed = seedDisplay.textContent || '';
+    const cibi = parseInt(cibiDisplay.textContent || '0');
+
+    if (!seed || seed === '-') {
+        alert('Please generate a board first!');
+        return;
+    }
+
+    const favorite: FavoriteBoard = {
+        seed,
+        mode: currentGameMode,
+        cibi,
+        timestamp: Date.now()
+    };
+
+    const favorites = getFavorites();
+
+    // Check if already saved
+    if (favorites.some(f => f.seed === seed && f.mode === currentGameMode)) {
+        alert('This board is already in your favorites!');
+        return;
+    }
+
+    favorites.push(favorite);
+    localStorage.setItem('catanFavorites', JSON.stringify(favorites));
+
+    alert('⭐ Board saved to favorites!');
+    updateFavoritesList();
+}
+
+/**
+ * Get all favorites from localStorage
+ */
+function getFavorites(): FavoriteBoard[] {
+    const stored = localStorage.getItem('catanFavorites');
+    return stored ? JSON.parse(stored) : [];
+}
+
+/**
+ * Toggle favorites list visibility
+ */
+function toggleFavoritesList(): void {
+    const list = document.getElementById('favoritesList');
+    if (!list) return;
+
+    if (list.style.display === 'none') {
+        list.style.display = 'block';
+        updateFavoritesList();
+    } else {
+        list.style.display = 'none';
+    }
+}
+
+/**
+ * Update favorites list display
+ */
+function updateFavoritesList(): void {
+    const list = document.getElementById('favoritesList');
+    if (!list) return;
+
+    const favorites = getFavorites();
+
+    if (favorites.length === 0) {
+        list.innerHTML = '<div style="opacity: 0.7; text-align: center; padding: 10px;">No favorites saved yet</div>';
+        return;
+    }
+
+    // Sort by timestamp, newest first
+    favorites.sort((a, b) => b.timestamp - a.timestamp);
+
+    list.innerHTML = favorites.map((fav, index) => `
+        <div class="favorite-item">
+            <div>
+                <strong>${fav.seed}</strong><br>
+                <small>${fav.mode} • CIBI: ${fav.cibi}</small>
+            </div>
+            <div style="display: flex; gap: 5px;">
+                <button onclick="loadFavorite(${index})" style="padding: 4px 8px; font-size: 11px; background: #4a6d8c; border: none; border-radius: 4px; color: white; cursor: pointer;">Load</button>
+                <button onclick="deleteFavorite(${index})" style="padding: 4px 8px; font-size: 11px; background: #c62828; border: none; border-radius: 4px; color: white; cursor: pointer;">Delete</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+/**
+ * Load a favorite board
+ */
+function loadFavorite(index: number): void {
+    const favorites = getFavorites();
+    if (index < 0 || index >= favorites.length) return;
+
+    const fav = favorites[index];
+
+    // Set game mode
+    if (fav.mode !== currentGameMode) {
+        setGameMode(fav.mode);
+    }
+
+    // Set seed and shuffle
+    const seedInput = document.getElementById('seedInput') as HTMLInputElement;
+    if (seedInput) {
+        seedInput.value = fav.seed;
+    }
+
+    shuffleBoard();
+}
+
+/**
+ * Delete a favorite board
+ */
+function deleteFavorite(index: number): void {
+    const favorites = getFavorites();
+    if (index < 0 || index >= favorites.length) return;
+
+    favorites.splice(index, 1);
+    localStorage.setItem('catanFavorites', JSON.stringify(favorites));
+
+    updateFavoritesList();
 }
 
 // Make functions available globally
 (window as any).shuffleBoard = shuffleBoard;
 (window as any).setGameMode = setGameMode;
+(window as any).saveFavorite = saveFavorite;
+(window as any).toggleFavoritesList = toggleFavoritesList;
+(window as any).loadFavorite = loadFavorite;
+(window as any).deleteFavorite = deleteFavorite;
 
 // Initialize board visibility on page load
 document.addEventListener('DOMContentLoaded', () => {
