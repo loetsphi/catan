@@ -594,7 +594,6 @@ function updateBoardDisplay(
                     <div class="resource-label">${label}</div>
                     <div class="number-token">
                         <div class="number ${colorClass}">${num.val}</div>
-                        <div class="token-letter">${num.letter}</div>
                         <div class="pips">${num.pips}</div>
                     </div>
                 `;

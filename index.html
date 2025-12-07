@@ -57,6 +57,20 @@
             letter-spacing: 0.5px;
         }
 
+        .desktop-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .controls-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         .controls-mobile {
             width: 100%;
             max-width: 500px;
@@ -225,13 +239,6 @@
         .number.red { color: #c62828; }
         .number.black { color: #2c2c2c; }
 
-        .token-letter {
-            font-size: 5px;
-            color: #999;
-            margin-top: 0px;
-            font-weight: 400;
-        }
-
         .pips {
             font-size: 3px;
             color: #666;
@@ -359,15 +366,14 @@
         @media (min-width: 1024px) {
             body {
                 padding: 30px;
-                flex-direction: row;
-                justify-content: center;
-                align-items: flex-start;
-                gap: 40px;
-                flex-wrap: wrap;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
             }
 
             .header {
                 width: 100%;
+                max-width: 1350px;
                 margin-bottom: 20px;
             }
 
@@ -381,6 +387,16 @@
 
             .version {
                 font-size: 12px;
+            }
+
+            .desktop-wrapper {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 40px;
+                width: 100%;
+                max-width: 1350px;
             }
 
             .controls-container {
@@ -487,6 +503,7 @@
         <div class="version" id="version"></div>
     </div>
 
+    <div class="desktop-wrapper">
     <div class="controls-container">
     <div class="controls-mobile">
         <div class="control-title">🎮 Game Mode</div>
@@ -544,6 +561,19 @@
         </div>
     </div>
 
+    <div class="legend-mobile">
+        <div class="legend-title">📊 Number Guide</div>
+        <div class="legend-grid">
+            <div class="legend-item">🔴 6, 8 = Best</div>
+            <div class="legend-item">⚫ 5, 9 = Great</div>
+            <div class="legend-item">⚫ 4, 10 = Good</div>
+            <div class="legend-item">⚫ 3, 11 = Fair</div>
+            <div class="legend-item">⚫ 2, 12 = Rare</div>
+            <div class="legend-item">🏜️ Desert = 0</div>
+        </div>
+    </div>
+    </div>
+
     <div class="board-container">
         <div class="board-wrapper">
             <div class="board">
@@ -551,19 +581,19 @@
                 <div class="hex wood" style="left: 145px; top: 42px;">
                     <div class="hex-inner">
                         <div class="resource-label">Wood</div>
-                        <div class="number-token"><div class="number black">5</div><div class="token-letter">A</div><div class="pips">••••</div></div>
+                        <div class="number-token"><div class="number black">5</div><div class="pips">••••</div></div>
                     </div>
                 </div>
                 <div class="hex sheep" style="left: 193px; top: 42px;">
                     <div class="hex-inner">
                         <div class="resource-label">Sheep</div>
-                        <div class="number-token"><div class="number black">2</div><div class="token-letter">B</div><div class="pips">•</div></div>
+                        <div class="number-token"><div class="number black">2</div><div class="pips">•</div></div>
                     </div>
                 </div>
                 <div class="hex wheat" style="left: 241px; top: 42px;">
                     <div class="hex-inner">
                         <div class="resource-label">Wheat</div>
-                        <div class="number-token"><div class="number red">6</div><div class="token-letter">C</div><div class="pips">•••••</div></div>
+                        <div class="number-token"><div class="number red">6</div><div class="pips">•••••</div></div>
                     </div>
                 </div>
 
@@ -571,25 +601,25 @@
                 <div class="hex brick" style="left: 121px; top: 84px;">
                     <div class="hex-inner">
                         <div class="resource-label">Brick</div>
-                        <div class="number-token"><div class="number black">3</div><div class="token-letter">D</div><div class="pips">••</div></div>
+                        <div class="number-token"><div class="number black">3</div><div class="pips">••</div></div>
                     </div>
                 </div>
                 <div class="hex ore" style="left: 169px; top: 84px;">
                     <div class="hex-inner">
                         <div class="resource-label">Ore</div>
-                        <div class="number-token"><div class="number black">3</div><div class="token-letter">E</div><div class="pips">••</div></div>
+                        <div class="number-token"><div class="number black">3</div><div class="pips">••</div></div>
                     </div>
                 </div>
                 <div class="hex wood" style="left: 217px; top: 84px;">
                     <div class="hex-inner">
                         <div class="resource-label">Wood</div>
-                        <div class="number-token"><div class="number black">4</div><div class="token-letter">F</div><div class="pips">•••</div></div>
+                        <div class="number-token"><div class="number black">4</div><div class="pips">•••</div></div>
                     </div>
                 </div>
                 <div class="hex wheat" style="left: 265px; top: 84px;">
                     <div class="hex-inner">
                         <div class="resource-label">Wheat</div>
-                        <div class="number-token"><div class="number black">4</div><div class="token-letter">G</div><div class="pips">•••</div></div>
+                        <div class="number-token"><div class="number black">4</div><div class="pips">•••</div></div>
                     </div>
                 </div>
 
@@ -597,31 +627,31 @@
                 <div class="hex sheep" style="left: 97px; top: 126px;">
                     <div class="hex-inner">
                         <div class="resource-label">Sheep</div>
-                        <div class="number-token"><div class="number black">5</div><div class="token-letter">H</div><div class="pips">••••</div></div>
+                        <div class="number-token"><div class="number black">5</div><div class="pips">••••</div></div>
                     </div>
                 </div>
                 <div class="hex brick" style="left: 145px; top: 126px;">
                     <div class="hex-inner">
                         <div class="resource-label">Brick</div>
-                        <div class="number-token"><div class="number red">6</div><div class="token-letter">I</div><div class="pips">•••••</div></div>
+                        <div class="number-token"><div class="number red">6</div><div class="pips">•••••</div></div>
                     </div>
                 </div>
                 <div class="hex ore" style="left: 193px; top: 126px;">
                     <div class="hex-inner">
                         <div class="resource-label">Ore</div>
-                        <div class="number-token"><div class="number black">9</div><div class="token-letter">J</div><div class="pips">••••</div></div>
+                        <div class="number-token"><div class="number black">9</div><div class="pips">••••</div></div>
                     </div>
                 </div>
                 <div class="hex wood" style="left: 241px; top: 126px;">
                     <div class="hex-inner">
                         <div class="resource-label">Wood</div>
-                        <div class="number-token"><div class="number red">8</div><div class="token-letter">K</div><div class="pips">•••••</div></div>
+                        <div class="number-token"><div class="number red">8</div><div class="pips">•••••</div></div>
                     </div>
                 </div>
                 <div class="hex wheat" style="left: 289px; top: 126px;">
                     <div class="hex-inner">
                         <div class="resource-label">Wheat</div>
-                        <div class="number-token"><div class="number black">10</div><div class="token-letter">L</div><div class="pips">•••</div></div>
+                        <div class="number-token"><div class="number black">10</div><div class="pips">•••</div></div>
                     </div>
                 </div>
 
@@ -637,31 +667,31 @@
                 <div class="hex sheep" style="left: 121px; top: 168px;">
                     <div class="hex-inner">
                         <div class="resource-label">Sheep</div>
-                        <div class="number-token"><div class="number black">11</div><div class="token-letter">M</div><div class="pips">••</div></div>
+                        <div class="number-token"><div class="number black">11</div><div class="pips">••</div></div>
                     </div>
                 </div>
                 <div class="hex wheat" style="left: 169px; top: 168px;">
                     <div class="hex-inner">
                         <div class="resource-label">Wheat</div>
-                        <div class="number-token"><div class="number black">10</div><div class="token-letter">N</div><div class="pips">•••</div></div>
+                        <div class="number-token"><div class="number black">10</div><div class="pips">•••</div></div>
                     </div>
                 </div>
                 <div class="hex brick" style="left: 217px; top: 168px;">
                     <div class="hex-inner">
                         <div class="resource-label">Brick</div>
-                        <div class="number-token"><div class="number black">3</div><div class="token-letter">O</div><div class="pips">••</div></div>
+                        <div class="number-token"><div class="number black">3</div><div class="pips">••</div></div>
                     </div>
                 </div>
                 <div class="hex ore" style="left: 265px; top: 168px;">
                     <div class="hex-inner">
                         <div class="resource-label">Ore</div>
-                        <div class="number-token"><div class="number black">11</div><div class="token-letter">P</div><div class="pips">••</div></div>
+                        <div class="number-token"><div class="number black">11</div><div class="pips">••</div></div>
                     </div>
                 </div>
                 <div class="hex wood" style="left: 313px; top: 168px;">
                     <div class="hex-inner">
                         <div class="resource-label">Wood</div>
-                        <div class="number-token"><div class="number black">12</div><div class="token-letter">Q</div><div class="pips">•</div></div>
+                        <div class="number-token"><div class="number black">12</div><div class="pips">•</div></div>
                     </div>
                 </div>
 
@@ -669,31 +699,31 @@
                 <div class="hex ore" style="left: 97px; top: 210px;">
                     <div class="hex-inner">
                         <div class="resource-label">Ore</div>
-                        <div class="number-token"><div class="number black">9</div><div class="token-letter">R</div><div class="pips">••••</div></div>
+                        <div class="number-token"><div class="number black">9</div><div class="pips">••••</div></div>
                     </div>
                 </div>
                 <div class="hex sheep" style="left: 145px; top: 210px;">
                     <div class="hex-inner">
                         <div class="resource-label">Sheep</div>
-                        <div class="number-token"><div class="number black">2</div><div class="token-letter">S</div><div class="pips">•</div></div>
+                        <div class="number-token"><div class="number black">2</div><div class="pips">•</div></div>
                     </div>
                 </div>
                 <div class="hex brick" style="left: 193px; top: 210px;">
                     <div class="hex-inner">
                         <div class="resource-label">Brick</div>
-                        <div class="number-token"><div class="number red">8</div><div class="token-letter">T</div><div class="pips">•••••</div></div>
+                        <div class="number-token"><div class="number red">8</div><div class="pips">•••••</div></div>
                     </div>
                 </div>
                 <div class="hex wheat" style="left: 241px; top: 210px;">
                     <div class="hex-inner">
                         <div class="resource-label">Wheat</div>
-                        <div class="number-token"><div class="number black">4</div><div class="token-letter">U</div><div class="pips">•••</div></div>
+                        <div class="number-token"><div class="number black">4</div><div class="pips">•••</div></div>
                     </div>
                 </div>
                 <div class="hex wood" style="left: 289px; top: 210px;">
                     <div class="hex-inner">
                         <div class="resource-label">Wood</div>
-                        <div class="number-token"><div class="number black">5</div><div class="token-letter">V</div><div class="pips">••••</div></div>
+                        <div class="number-token"><div class="number black">5</div><div class="pips">••••</div></div>
                     </div>
                 </div>
 
@@ -701,25 +731,25 @@
                 <div class="hex ore" style="left: 121px; top: 252px;">
                     <div class="hex-inner">
                         <div class="resource-label">Ore</div>
-                        <div class="number-token"><div class="number red">6</div><div class="token-letter">W</div><div class="pips">•••••</div></div>
+                        <div class="number-token"><div class="number red">6</div><div class="pips">•••••</div></div>
                     </div>
                 </div>
                 <div class="hex sheep" style="left: 169px; top: 252px;">
                     <div class="hex-inner">
                         <div class="resource-label">Sheep</div>
-                        <div class="number-token"><div class="number black">10</div><div class="token-letter">X</div><div class="pips">•••</div></div>
+                        <div class="number-token"><div class="number black">10</div><div class="pips">•••</div></div>
                     </div>
                 </div>
                 <div class="hex wheat" style="left: 217px; top: 252px;">
                     <div class="hex-inner">
                         <div class="resource-label">Wheat</div>
-                        <div class="number-token"><div class="number red">8</div><div class="token-letter">Y</div><div class="pips">•••••</div></div>
+                        <div class="number-token"><div class="number red">8</div><div class="pips">•••••</div></div>
                     </div>
                 </div>
                 <div class="hex wood" style="left: 265px; top: 252px;">
                     <div class="hex-inner">
                         <div class="resource-label">Wood</div>
-                        <div class="number-token"><div class="number black">9</div><div class="token-letter">Za</div><div class="pips">••••</div></div>
+                        <div class="number-token"><div class="number black">9</div><div class="pips">••••</div></div>
                     </div>
                 </div>
 
@@ -727,7 +757,7 @@
                 <div class="hex brick" style="left: 145px; top: 294px;">
                     <div class="hex-inner">
                         <div class="resource-label">Brick</div>
-                        <div class="number-token"><div class="number black">11</div><div class="token-letter">Zb</div><div class="pips">••</div></div>
+                        <div class="number-token"><div class="number black">11</div><div class="pips">••</div></div>
                     </div>
                 </div>
                 <div class="hex desert" style="left: 193px; top: 294px;">
@@ -741,22 +771,10 @@
                 <div class="hex sheep" style="left: 241px; top: 294px;">
                     <div class="hex-inner">
                         <div class="resource-label">Sheep</div>
-                        <div class="number-token"><div class="number black">12</div><div class="token-letter">Zc</div><div class="pips">•</div></div>
+                        <div class="number-token"><div class="number black">12</div><div class="pips">•</div></div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="legend-mobile">
-        <div class="legend-title">📊 Number Guide</div>
-        <div class="legend-grid">
-            <div class="legend-item">🔴 6, 8 = Best</div>
-            <div class="legend-item">⚫ 5, 9 = Great</div>
-            <div class="legend-item">⚫ 4, 10 = Good</div>
-            <div class="legend-item">⚫ 3, 11 = Fair</div>
-            <div class="legend-item">⚫ 2, 12 = Rare</div>
-            <div class="legend-item">🏜️ Desert = 0</div>
         </div>
     </div>
     </div>
