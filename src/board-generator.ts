@@ -452,6 +452,18 @@ function updateBoardVisibility(): void {
  * Generates resources, numbers, calculates CIBI, and updates the UI
  */
 function shuffleBoard(): void {
+    // Clear any existing settlement markers when shuffling
+    const existingMarkers = document.querySelectorAll('.settlement-marker');
+    const hexes = document.querySelectorAll<HTMLElement>('.hex');
+    existingMarkers.forEach(marker => marker.remove());
+    hexes.forEach(hex => {
+        hex.style.filter = '';
+    });
+
+    // Reset button text
+    const button = document.getElementById('settlementBtn');
+    if (button) button.textContent = '🏘️ Show Best Spots';
+
     const seedInput = (document.getElementById('seedInput') as HTMLInputElement).value;
     let friendlySeedName: string;
 
@@ -803,7 +815,12 @@ function toggleSettlementSuggestions(): void {
     const topSettlements = currentSettlements.slice(0, 5);
 
     topSettlements.forEach((settlement, rank) => {
+        // Only mark the first visible hex for each settlement to avoid duplicates
+        let markerPlaced = false;
+
         settlement.hexIndices.forEach(hexIndex => {
+            if (markerPlaced) return; // Only place one marker per settlement
+
             const hex = hexes[hexIndex];
             if (!hex || hex.style.display === 'none') return;
 
@@ -830,9 +847,14 @@ function toggleSettlementSuggestions(): void {
             `;
             marker.textContent = (rank + 1).toString();
             hex.appendChild(marker);
+            markerPlaced = true;
+        });
 
-            // Add glow effect to hex
-            hex.style.filter = 'brightness(1.1) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6))';
+        // Add subtle glow to all hexes touching this settlement
+        settlement.hexIndices.forEach(hexIndex => {
+            const hex = hexes[hexIndex];
+            if (!hex || hex.style.display === 'none') return;
+            hex.style.filter = 'brightness(1.05) drop-shadow(0 0 4px rgba(255, 215, 0, 0.3))';
         });
     });
 }
